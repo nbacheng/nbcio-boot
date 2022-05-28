@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>nbcio-boot-parent</artifactId>
+		<groupId>com.nbcio.boot</groupId>
+		<version>3.0</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>nbcio-module-estar</artifactId>
+	<groupId>com.nbcio.modules.estar</groupId>
+	<version>1.0.0</version>
+
+    <properties> <!-- 增加这部分，避免pom.xm文件报错 -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+		<maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
+		<skipTests>true</skipTests>
+	</properties>
+    
+	<dependencies>
+		<dependency>
+			<groupId>com.nbcio.boot</groupId>
+			<artifactId>nbcio-boot-base-core</artifactId>
+		</dependency>
+		<!--流程模块-->
+        <dependency>
+            <groupId>com.nbcio.boot</groupId>
+            <artifactId>nbcio-boot-module-flowable</artifactId>
+            <version>3.0</version>
+        </dependency>
+		<dependency>
+			<groupId>com.taobao.top</groupId>
+			<artifactId>top-api-sdk-dev</artifactId>
+			<version>dingtalk-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${pom.basedir}/lib/taobao-sdk-java-auto_1479188381469-20220210.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>com.taobao.top</groupId>
+			<artifactId>lippi-oapi-encrpt</artifactId>
+			<version>dingtalk-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${pom.basedir}/lib/lippi-oapi-encrpt.jar</systemPath>
+		</dependency>
+		<dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>dingtalk</artifactId>
+            <version>1.2.15</version>
+        </dependency>
+        
+	</dependencies>
+</project>

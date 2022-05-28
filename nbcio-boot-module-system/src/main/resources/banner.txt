@@ -1,0 +1,12 @@
+${AnsiColor.BRIGHT_BLUE}   
+          
+ _   _ | |__    __ (_)  ___          | |__   ___   ___ | |_ 
+| |\| || '_ \ / __ | | / _ \  ______ | '_ \ / _ \ / _ \| __|       
+| |\| || | _||  (_|| |( (_) | ______ | |_) | (_) | (_) | |_      
+| | \_||_.__/ \___ | | \___/         |_.__/ \___/ \___/ \__|
+
+
+${AnsiColor.BRIGHT_GREEN}
+Nbcio  Boot Version: 3.0
+Spring Boot Version: ${spring-boot.version}${spring-boot.formatted-version}
+${AnsiColor.BLACK}

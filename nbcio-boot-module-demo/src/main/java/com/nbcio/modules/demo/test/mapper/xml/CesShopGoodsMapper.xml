@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nbcio.modules.demo.test.mapper.CesShopGoodsMapper">
+  <select id="getByIds" resultType="com.nbcio.modules.demo.test.vo.CesShopGoodsVo">
+        select a.*, 1 as num, a.price*1 as zongprice from ces_shop_goods a where a.id in (
+        <foreach collection="idArray" item="id" separator=",">
+            #{id}
+        </foreach>
+        )
+        order by id desc
+    </select>		 
+</mapper>

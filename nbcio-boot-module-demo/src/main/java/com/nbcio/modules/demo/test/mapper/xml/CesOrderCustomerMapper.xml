@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nbcio.modules.demo.test.mapper.CesOrderCustomerMapper">
+
+	<delete id="deleteByMainId" parameterType="java.lang.String">
+		DELETE 
+		FROM  ces_order_customer 
+		WHERE
+			 order_main_id = #{mainId} 	</delete>
+	
+	<select id="selectByMainId" parameterType="java.lang.String" resultType="com.nbcio.modules.demo.test.entity.CesOrderCustomer">
+		SELECT * 
+		FROM  ces_order_customer
+		WHERE
+			 order_main_id = #{mainId} 	</select>
+</mapper>

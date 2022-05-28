@@ -1,0 +1,473 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>Logback Log Messages</title>
+<style  type="text/css">
+table { margin-left: 2em; margin-right: 2em; border-left: 2px solid #AAA; }
+TR.even { background: #FFFFFF; }
+TR.odd { background: #EAEAEA; }
+TR.warn TD.Level, TR.error TD.Level, TR.fatal TD.Level {font-weight: bold; color: #FF4040 }
+TD { padding-right: 1ex; padding-left: 1ex; border-right: 2px solid #AAA; }
+TD.Time, TD.Date { text-align: right; font-family: courier, monospace; font-size: smaller; }
+TD.Thread { text-align: left; }
+TD.Level { text-align: right; }
+TD.Logger { text-align: left; }
+TR.header { background: #596ED5; color: #FFF; font-weight: bold; font-size: larger; }
+TD.Exception { background: #A2AEE8; font-family: courier, monospace;}
+</style>
+
+  </head>
+<body>
+<hr/>
+<p>Log session start time Tue Mar 08 11:16:26 CST 2022</p><p></p>
+
+<table cellspacing="0">
+<tr class="header">
+<td class="Level">Level</td>
+<td class="Date">Date</td>
+<td class="Message">Message</td>
+<td class="MethodOfCaller">MethodOfCaller</td>
+<td class="FileOfCaller">FileOfCaller</td>
+<td class="LineOfCaller">LineOfCaller</td>
+</tr>
+
+
+<tr class="error even">
+<td class="Level">ERROR</td>
+<td class="Date">2022-03-08 11:17:04,945</td>
+<td class="Message">Application run failed</td>
+<td class="MethodOfCaller">reportFailure</td>
+<td class="FileOfCaller">SpringApplication.java</td>
+<td class="LineOfCaller">837</td>
+</tr>
+<tr><td class="Exception" colspan="6">org.springframework.beans.factory.BeanCreationException: Error creating bean with name &#39;callbackController&#39;: Lookup method resolution failed; nested exception is java.lang.IllegalStateException: Failed to introspect Class [com.nbcio.modules.bird.controller.CallbackController] from ClassLoader [org.springframework.boot.loader.LaunchedURLClassLoader@238e0d81]
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.determineCandidateConstructors(AutowiredAnnotationBeanPostProcessor.java:289)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.determineConstructorsFromBeanPostProcessors(AbstractAutowireCapableBeanFactory.java:1285)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1200)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:556)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:516)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:324)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:322)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:897)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:879)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:551)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:143)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:758)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:750)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:405)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.run(SpringApplication.java:315)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.run(SpringApplication.java:1237)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.jeecg.JeecgSystemApplication.main(JeecgSystemApplication.java:28)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.reflect.Method.invoke(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.MainMethodRunner.run(MainMethodRunner.java:49)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.Launcher.launch(Launcher.java:107)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.Launcher.launch(Launcher.java:58)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.JarLauncher.main(JarLauncher.java:88)
+<br />Caused by: java.lang.IllegalStateException: Failed to introspect Class [com.nbcio.modules.bird.controller.CallbackController] from ClassLoader [org.springframework.boot.loader.LaunchedURLClassLoader@238e0d81]
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.util.ReflectionUtils.getDeclaredMethods(ReflectionUtils.java:481)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.util.ReflectionUtils.doWithLocalMethods(ReflectionUtils.java:321)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.determineCandidateConstructors(AutowiredAnnotationBeanPostProcessor.java:267)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;	... 27 common frames omitted
+<br />Caused by: java.lang.NoClassDefFoundError: com/taobao/api/TaobaoRequest
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.Class.getDeclaredMethods0(Native Method)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.Class.privateGetDeclaredMethods(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.Class.getDeclaredMethods(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.util.ReflectionUtils.getDeclaredMethods(ReflectionUtils.java:463)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;	... 29 common frames omitted
+<br />Caused by: java.lang.ClassNotFoundException: com.taobao.api.TaobaoRequest
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.net.URLClassLoader.findClass(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.ClassLoader.loadClass(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.LaunchedURLClassLoader.loadClass(LaunchedURLClassLoader.java:151)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.ClassLoader.loadClass(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;	... 33 common frames omitted
+</td></tr><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>Logback Log Messages</title>
+<style  type="text/css">
+table { margin-left: 2em; margin-right: 2em; border-left: 2px solid #AAA; }
+TR.even { background: #FFFFFF; }
+TR.odd { background: #EAEAEA; }
+TR.warn TD.Level, TR.error TD.Level, TR.fatal TD.Level {font-weight: bold; color: #FF4040 }
+TD { padding-right: 1ex; padding-left: 1ex; border-right: 2px solid #AAA; }
+TD.Time, TD.Date { text-align: right; font-family: courier, monospace; font-size: smaller; }
+TD.Thread { text-align: left; }
+TD.Level { text-align: right; }
+TD.Logger { text-align: left; }
+TR.header { background: #596ED5; color: #FFF; font-weight: bold; font-size: larger; }
+TD.Exception { background: #A2AEE8; font-family: courier, monospace;}
+</style>
+
+  </head>
+<body>
+<hr/>
+<p>Log session start time Tue Mar 08 12:43:39 CST 2022</p><p></p>
+
+<table cellspacing="0">
+<tr class="header">
+<td class="Level">Level</td>
+<td class="Date">Date</td>
+<td class="Message">Message</td>
+<td class="MethodOfCaller">MethodOfCaller</td>
+<td class="FileOfCaller">FileOfCaller</td>
+<td class="LineOfCaller">LineOfCaller</td>
+</tr>
+
+
+<tr class="error even">
+<td class="Level">ERROR</td>
+<td class="Date">2022-03-08 12:44:07,860</td>
+<td class="Message">Application run failed</td>
+<td class="MethodOfCaller">reportFailure</td>
+<td class="FileOfCaller">SpringApplication.java</td>
+<td class="LineOfCaller">837</td>
+</tr>
+<tr><td class="Exception" colspan="6">org.springframework.beans.factory.BeanCreationException: Error creating bean with name &#39;callbackController&#39;: Lookup method resolution failed; nested exception is java.lang.IllegalStateException: Failed to introspect Class [com.nbcio.modules.bird.controller.CallbackController] from ClassLoader [org.springframework.boot.loader.LaunchedURLClassLoader@238e0d81]
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.determineCandidateConstructors(AutowiredAnnotationBeanPostProcessor.java:289)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.determineConstructorsFromBeanPostProcessors(AbstractAutowireCapableBeanFactory.java:1285)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1200)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:556)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:516)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:324)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:322)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:897)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:879)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:551)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:143)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:758)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:750)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:405)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.run(SpringApplication.java:315)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.run(SpringApplication.java:1237)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.jeecg.JeecgSystemApplication.main(JeecgSystemApplication.java:28)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.reflect.Method.invoke(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.MainMethodRunner.run(MainMethodRunner.java:49)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.Launcher.launch(Launcher.java:107)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.Launcher.launch(Launcher.java:58)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.JarLauncher.main(JarLauncher.java:88)
+<br />Caused by: java.lang.IllegalStateException: Failed to introspect Class [com.nbcio.modules.bird.controller.CallbackController] from ClassLoader [org.springframework.boot.loader.LaunchedURLClassLoader@238e0d81]
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.util.ReflectionUtils.getDeclaredMethods(ReflectionUtils.java:481)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.util.ReflectionUtils.doWithLocalMethods(ReflectionUtils.java:321)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.determineCandidateConstructors(AutowiredAnnotationBeanPostProcessor.java:267)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;	... 27 common frames omitted
+<br />Caused by: java.lang.NoClassDefFoundError: com/taobao/api/TaobaoRequest
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.Class.getDeclaredMethods0(Native Method)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.Class.privateGetDeclaredMethods(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.Class.getDeclaredMethods(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.util.ReflectionUtils.getDeclaredMethods(ReflectionUtils.java:463)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;	... 29 common frames omitted
+<br />Caused by: java.lang.ClassNotFoundException: com.taobao.api.TaobaoRequest
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.net.URLClassLoader.findClass(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.ClassLoader.loadClass(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.LaunchedURLClassLoader.loadClass(LaunchedURLClassLoader.java:151)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.ClassLoader.loadClass(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;	... 33 common frames omitted
+</td></tr><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>Logback Log Messages</title>
+<style  type="text/css">
+table { margin-left: 2em; margin-right: 2em; border-left: 2px solid #AAA; }
+TR.even { background: #FFFFFF; }
+TR.odd { background: #EAEAEA; }
+TR.warn TD.Level, TR.error TD.Level, TR.fatal TD.Level {font-weight: bold; color: #FF4040 }
+TD { padding-right: 1ex; padding-left: 1ex; border-right: 2px solid #AAA; }
+TD.Time, TD.Date { text-align: right; font-family: courier, monospace; font-size: smaller; }
+TD.Thread { text-align: left; }
+TD.Level { text-align: right; }
+TD.Logger { text-align: left; }
+TR.header { background: #596ED5; color: #FFF; font-weight: bold; font-size: larger; }
+TD.Exception { background: #A2AEE8; font-family: courier, monospace;}
+</style>
+
+  </head>
+<body>
+<hr/>
+<p>Log session start time Tue Mar 08 12:55:02 CST 2022</p><p></p>
+
+<table cellspacing="0">
+<tr class="header">
+<td class="Level">Level</td>
+<td class="Date">Date</td>
+<td class="Message">Message</td>
+<td class="MethodOfCaller">MethodOfCaller</td>
+<td class="FileOfCaller">FileOfCaller</td>
+<td class="LineOfCaller">LineOfCaller</td>
+</tr>
+
+
+<tr class="error even">
+<td class="Level">ERROR</td>
+<td class="Date">2022-03-08 12:55:27,790</td>
+<td class="Message">Application run failed</td>
+<td class="MethodOfCaller">reportFailure</td>
+<td class="FileOfCaller">SpringApplication.java</td>
+<td class="LineOfCaller">837</td>
+</tr>
+<tr><td class="Exception" colspan="6">org.springframework.beans.factory.BeanCreationException: Error creating bean with name &#39;callbackController&#39;: Lookup method resolution failed; nested exception is java.lang.IllegalStateException: Failed to introspect Class [com.nbcio.modules.bird.controller.CallbackController] from ClassLoader [org.springframework.boot.loader.LaunchedURLClassLoader@238e0d81]
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.determineCandidateConstructors(AutowiredAnnotationBeanPostProcessor.java:289)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.determineConstructorsFromBeanPostProcessors(AbstractAutowireCapableBeanFactory.java:1285)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1200)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:556)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:516)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:324)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:322)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:897)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:879)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:551)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:143)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:758)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:750)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:405)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.run(SpringApplication.java:315)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.run(SpringApplication.java:1237)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.jeecg.JeecgSystemApplication.main(JeecgSystemApplication.java:28)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.reflect.Method.invoke(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.MainMethodRunner.run(MainMethodRunner.java:49)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.Launcher.launch(Launcher.java:107)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.Launcher.launch(Launcher.java:58)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.JarLauncher.main(JarLauncher.java:88)
+<br />Caused by: java.lang.IllegalStateException: Failed to introspect Class [com.nbcio.modules.bird.controller.CallbackController] from ClassLoader [org.springframework.boot.loader.LaunchedURLClassLoader@238e0d81]
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.util.ReflectionUtils.getDeclaredMethods(ReflectionUtils.java:481)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.util.ReflectionUtils.doWithLocalMethods(ReflectionUtils.java:321)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.determineCandidateConstructors(AutowiredAnnotationBeanPostProcessor.java:267)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;	... 27 common frames omitted
+<br />Caused by: java.lang.NoClassDefFoundError: com/taobao/api/TaobaoRequest
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.Class.getDeclaredMethods0(Native Method)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.Class.privateGetDeclaredMethods(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.Class.getDeclaredMethods(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.util.ReflectionUtils.getDeclaredMethods(ReflectionUtils.java:463)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;	... 29 common frames omitted
+<br />Caused by: java.lang.ClassNotFoundException: com.taobao.api.TaobaoRequest
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.net.URLClassLoader.findClass(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.ClassLoader.loadClass(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.LaunchedURLClassLoader.loadClass(LaunchedURLClassLoader.java:151)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.ClassLoader.loadClass(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;	... 33 common frames omitted
+</td></tr><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>Logback Log Messages</title>
+<style  type="text/css">
+table { margin-left: 2em; margin-right: 2em; border-left: 2px solid #AAA; }
+TR.even { background: #FFFFFF; }
+TR.odd { background: #EAEAEA; }
+TR.warn TD.Level, TR.error TD.Level, TR.fatal TD.Level {font-weight: bold; color: #FF4040 }
+TD { padding-right: 1ex; padding-left: 1ex; border-right: 2px solid #AAA; }
+TD.Time, TD.Date { text-align: right; font-family: courier, monospace; font-size: smaller; }
+TD.Thread { text-align: left; }
+TD.Level { text-align: right; }
+TD.Logger { text-align: left; }
+TR.header { background: #596ED5; color: #FFF; font-weight: bold; font-size: larger; }
+TD.Exception { background: #A2AEE8; font-family: courier, monospace;}
+</style>
+
+  </head>
+<body>
+<hr/>
+<p>Log session start time Tue Mar 08 13:13:24 CST 2022</p><p></p>
+
+<table cellspacing="0">
+<tr class="header">
+<td class="Level">Level</td>
+<td class="Date">Date</td>
+<td class="Message">Message</td>
+<td class="MethodOfCaller">MethodOfCaller</td>
+<td class="FileOfCaller">FileOfCaller</td>
+<td class="LineOfCaller">LineOfCaller</td>
+</tr>
+
+
+<tr class="error even">
+<td class="Level">ERROR</td>
+<td class="Date">2022-03-08 13:13:57,310</td>
+<td class="Message">Application run failed</td>
+<td class="MethodOfCaller">reportFailure</td>
+<td class="FileOfCaller">SpringApplication.java</td>
+<td class="LineOfCaller">837</td>
+</tr>
+<tr><td class="Exception" colspan="6">org.springframework.beans.factory.BeanCreationException: Error creating bean with name &#39;callbackController&#39;: Lookup method resolution failed; nested exception is java.lang.IllegalStateException: Failed to introspect Class [com.nbcio.modules.bird.controller.CallbackController] from ClassLoader [org.springframework.boot.loader.LaunchedURLClassLoader@238e0d81]
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.determineCandidateConstructors(AutowiredAnnotationBeanPostProcessor.java:289)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.determineConstructorsFromBeanPostProcessors(AbstractAutowireCapableBeanFactory.java:1285)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1200)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:556)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:516)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:324)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:322)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:897)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:879)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:551)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:143)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:758)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:750)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:405)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.run(SpringApplication.java:315)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.run(SpringApplication.java:1237)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.jeecg.JeecgSystemApplication.main(JeecgSystemApplication.java:28)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.reflect.Method.invoke(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.MainMethodRunner.run(MainMethodRunner.java:49)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.Launcher.launch(Launcher.java:107)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.Launcher.launch(Launcher.java:58)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.JarLauncher.main(JarLauncher.java:88)
+<br />Caused by: java.lang.IllegalStateException: Failed to introspect Class [com.nbcio.modules.bird.controller.CallbackController] from ClassLoader [org.springframework.boot.loader.LaunchedURLClassLoader@238e0d81]
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.util.ReflectionUtils.getDeclaredMethods(ReflectionUtils.java:481)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.util.ReflectionUtils.doWithLocalMethods(ReflectionUtils.java:321)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.determineCandidateConstructors(AutowiredAnnotationBeanPostProcessor.java:267)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;	... 27 common frames omitted
+<br />Caused by: java.lang.NoClassDefFoundError: com/taobao/api/TaobaoRequest
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.Class.getDeclaredMethods0(Native Method)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.Class.privateGetDeclaredMethods(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.Class.getDeclaredMethods(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.util.ReflectionUtils.getDeclaredMethods(ReflectionUtils.java:463)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;	... 29 common frames omitted
+<br />Caused by: java.lang.ClassNotFoundException: com.taobao.api.TaobaoRequest
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.net.URLClassLoader.findClass(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.ClassLoader.loadClass(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.LaunchedURLClassLoader.loadClass(LaunchedURLClassLoader.java:151)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.ClassLoader.loadClass(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;	... 33 common frames omitted
+</td></tr><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>Logback Log Messages</title>
+<style  type="text/css">
+table { margin-left: 2em; margin-right: 2em; border-left: 2px solid #AAA; }
+TR.even { background: #FFFFFF; }
+TR.odd { background: #EAEAEA; }
+TR.warn TD.Level, TR.error TD.Level, TR.fatal TD.Level {font-weight: bold; color: #FF4040 }
+TD { padding-right: 1ex; padding-left: 1ex; border-right: 2px solid #AAA; }
+TD.Time, TD.Date { text-align: right; font-family: courier, monospace; font-size: smaller; }
+TD.Thread { text-align: left; }
+TD.Level { text-align: right; }
+TD.Logger { text-align: left; }
+TR.header { background: #596ED5; color: #FFF; font-weight: bold; font-size: larger; }
+TD.Exception { background: #A2AEE8; font-family: courier, monospace;}
+</style>
+
+  </head>
+<body>
+<hr/>
+<p>Log session start time Tue Mar 08 13:27:27 CST 2022</p><p></p>
+
+<table cellspacing="0">
+<tr class="header">
+<td class="Level">Level</td>
+<td class="Date">Date</td>
+<td class="Message">Message</td>
+<td class="MethodOfCaller">MethodOfCaller</td>
+<td class="FileOfCaller">FileOfCaller</td>
+<td class="LineOfCaller">LineOfCaller</td>
+</tr>
+
+
+<tr class="error even">
+<td class="Level">ERROR</td>
+<td class="Date">2022-03-08 13:27:53,350</td>
+<td class="Message">Application run failed</td>
+<td class="MethodOfCaller">reportFailure</td>
+<td class="FileOfCaller">SpringApplication.java</td>
+<td class="LineOfCaller">837</td>
+</tr>
+<tr><td class="Exception" colspan="6">org.springframework.beans.factory.BeanCreationException: Error creating bean with name &#39;callbackController&#39;: Lookup method resolution failed; nested exception is java.lang.IllegalStateException: Failed to introspect Class [com.nbcio.modules.bird.controller.CallbackController] from ClassLoader [org.springframework.boot.loader.LaunchedURLClassLoader@238e0d81]
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.determineCandidateConstructors(AutowiredAnnotationBeanPostProcessor.java:289)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.determineConstructorsFromBeanPostProcessors(AbstractAutowireCapableBeanFactory.java:1285)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1200)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:556)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:516)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:324)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:322)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:897)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:879)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:551)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:143)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:758)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:750)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:405)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.run(SpringApplication.java:315)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.run(SpringApplication.java:1237)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.jeecg.JeecgSystemApplication.main(JeecgSystemApplication.java:28)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.reflect.Method.invoke(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.MainMethodRunner.run(MainMethodRunner.java:49)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.Launcher.launch(Launcher.java:107)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.Launcher.launch(Launcher.java:58)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.JarLauncher.main(JarLauncher.java:88)
+<br />Caused by: java.lang.IllegalStateException: Failed to introspect Class [com.nbcio.modules.bird.controller.CallbackController] from ClassLoader [org.springframework.boot.loader.LaunchedURLClassLoader@238e0d81]
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.util.ReflectionUtils.getDeclaredMethods(ReflectionUtils.java:481)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.util.ReflectionUtils.doWithLocalMethods(ReflectionUtils.java:321)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.determineCandidateConstructors(AutowiredAnnotationBeanPostProcessor.java:267)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;	... 27 common frames omitted
+<br />Caused by: java.lang.NoClassDefFoundError: com/taobao/api/TaobaoRequest
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.Class.getDeclaredMethods0(Native Method)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.Class.privateGetDeclaredMethods(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.Class.getDeclaredMethods(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.util.ReflectionUtils.getDeclaredMethods(ReflectionUtils.java:463)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;	... 29 common frames omitted
+<br />Caused by: java.lang.ClassNotFoundException: com.taobao.api.TaobaoRequest
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.net.URLClassLoader.findClass(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.ClassLoader.loadClass(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at org.springframework.boot.loader.LaunchedURLClassLoader.loadClass(LaunchedURLClassLoader.java:151)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;at java.lang.ClassLoader.loadClass(Unknown Source)
+<br />&nbsp;&nbsp;&nbsp;&nbsp;	... 33 common frames omitted
+</td></tr><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>Logback Log Messages</title>
+<style  type="text/css">
+table { margin-left: 2em; margin-right: 2em; border-left: 2px solid #AAA; }
+TR.even { background: #FFFFFF; }
+TR.odd { background: #EAEAEA; }
+TR.warn TD.Level, TR.error TD.Level, TR.fatal TD.Level {font-weight: bold; color: #FF4040 }
+TD { padding-right: 1ex; padding-left: 1ex; border-right: 2px solid #AAA; }
+TD.Time, TD.Date { text-align: right; font-family: courier, monospace; font-size: smaller; }
+TD.Thread { text-align: left; }
+TD.Level { text-align: right; }
+TD.Logger { text-align: left; }
+TR.header { background: #596ED5; color: #FFF; font-weight: bold; font-size: larger; }
+TD.Exception { background: #A2AEE8; font-family: courier, monospace;}
+</style>
+
+  </head>
+<body>
+<hr/>
+<p>Log session start time Tue Mar 08 13:36:14 CST 2022</p><p></p>
+
+<table cellspacing="0">
+<tr class="header">
+<td class="Level">Level</td>
+<td class="Date">Date</td>
+<td class="Message">Message</td>
+<td class="MethodOfCaller">MethodOfCaller</td>
+<td class="FileOfCaller">FileOfCaller</td>
+<td class="LineOfCaller">LineOfCaller</td>
+</tr>
+

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nbcio.modules.flowable.mapper.SysCustomFormMapper">
+    <select id="selectSysCustomFormById" parameterType="String" resultType="com.nbcio.modules.flowable.entity.SysCustomForm">
+         select id, business_name, business_service, deploy_id, route_name,component,create_time, update_time, create_by, update_by, sys_org_code 
+         from sys_custom_form where id = #{formId}
+    </select>
+    
+    <select id="selectSysCustomFormByServiceName" parameterType="String" resultType="com.nbcio.modules.flowable.entity.SysCustomForm">
+         select id, business_name, business_service, deploy_id, route_name,component,create_time, update_time, create_by, update_by, sys_org_code 
+         from sys_custom_form where business_service = #{serviceName}
+    </select>
+    
+    <update id="updateCustom" parameterType="Object">
+         update sys_custom_form set deploy_id= #{customFormVo.deployId} where id = #{customFormVo.id}
+    </update>
+    
+    <select id="selectBussinessKeyByDeployId" parameterType="String" resultType="String">
+         select id from sys_custom_form where deploy_id = #{deployid}
+    </select>
+    
+</mapper>

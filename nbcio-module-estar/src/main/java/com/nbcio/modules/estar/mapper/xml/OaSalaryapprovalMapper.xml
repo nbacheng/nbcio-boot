@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nbcio.modules.estar.mapper.OaSalaryapprovalMapper">
+
+   <!--  更新流程状态 -->
+	<update id="updateProcessStatus" parameterType="Object" >
+		update oa_salaryapproval set end_time = #{processUpdateVo.endTime}, process_status= #{processUpdateVo.processStatus} where PROCESS_INSTANCE_ID = #{processUpdateVo.processInstanceId}
+	</update>
+	<!-- 根据实例id获取审批表信息-->
+	<select id="getByInstanceId" resultType="com.nbcio.modules.estar.entity.OaSalaryapproval">
+		select * from oa_salaryapproval where  PROCESS_INSTANCE_ID=#{processInstanceId}
+	</select> 
+</mapper>

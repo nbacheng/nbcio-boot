@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nbcio.modules.flowable.mapper.SysFormMapper">
+
+    <sql id="selectSysFormVo">
+        select id, form_name, form_content, create_time, update_time, create_by, update_by, remark from sys_form
+    </sql>
+    
+    <select id="selectSysFormById" parameterType="String" resultType="com.nbcio.modules.flowable.entity.SysForm">
+        <include refid="selectSysFormVo"/>
+        where id = #{formId}
+    </select>
+</mapper>

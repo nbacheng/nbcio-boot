@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+		<groupId>com.nbcio.boot</groupId>
+		<artifactId>nbcio-boot-parent</artifactId>
+		<version>3.0</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>nbcio-boot-module-system</artifactId>
+	
+	<properties> <!-- 增加这部分，避免pom.xm文件报错 -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+		<maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
+		<skipTests>true</skipTests>
+	</properties>
+	
+	<repositories>
+		<repository>
+			<id>aliyun</id>
+			<name>aliyun Repository</name>
+			<url>https://maven.aliyun.com/repository/public</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>jeecg</id>
+			<name>jeecg Repository</name>
+			<url>https://maven.jeecg.org/nexus/content/repositories/jeecg</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<!-- Log4j2惊爆0Day漏洞-->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>2.16.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-to-slf4j</artifactId>
+			<version>2.16.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.nbcio.boot</groupId>
+			<artifactId>nbcio-system-local-api</artifactId>
+		</dependency>
+		<!-- jeewx api -->
+		<dependency>
+			<groupId>org.jeecgframework</groupId>
+			<artifactId>jeewx-api</artifactId>
+			<version>1.4.6</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>commons-beanutils</artifactId>
+					<groupId>commons-beanutils</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>commons-lang</artifactId>
+					<groupId>commons-lang</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- 积木报表 -->
+		<dependency>
+			<groupId>org.jeecgframework.jimureport</groupId>
+			<artifactId>jimureport-spring-boot-starter</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+
+        <dependency>
+			<groupId>com.nbcio.boot</groupId>
+			<artifactId>nbcio-boot-base-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.taobao.top</groupId>
+			<artifactId>top-api-sdk-dev</artifactId>
+			<version>dingtalk-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${pom.basedir}/lib/taobao-sdk-java-auto_1479188381469-20220210.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>com.taobao.top</groupId>
+			<artifactId>lippi-oapi-encrpt</artifactId>
+			<version>dingtalk-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${pom.basedir}/lib/lippi-oapi-encrpt.jar</systemPath>
+		</dependency>
+		<dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>dingtalk</artifactId>
+            <version>1.2.15</version>
+        </dependency>
+
+       
+        
+		<!-- DEMO 示例模块【微服务启动请注释掉】 -->
+		<dependency>
+			<groupId>com.nbcio.boot</groupId>
+			<artifactId>nbcio-boot-module-demo</artifactId>
+			<version>3.0</version>
+		</dependency>
+		
+		<!-- BIRD 模块【微服务启动请注释掉】 add by nbacheng -->
+		<dependency>
+			<groupId>com.nbcio.modules.estar</groupId>
+			<artifactId>nbcio-module-estar</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<!--微服务模式下修改为true,跳过此打包插件，否则微服务模块无法引用-->
+					<skip>false</skip>
+					<fork>true</fork> <!-- 如果没有该配置，devtools不会生效 -->
+                    <includeSystemScope>true</includeSystemScope> <!-- 如果没有该配置，lib里的库文件不能编译进去 -->
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+
+</project>

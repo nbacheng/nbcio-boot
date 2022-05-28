@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>nbcio-boot-parent</artifactId>
+        <groupId>com.nbcio.boot</groupId>
+        <version>3.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>nbcio-boot-module-flowable</artifactId>
+
+    <properties> <!-- 增加这部分，避免pom.xm文件报错 -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+		<maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
+		<skipTests>true</skipTests>
+	</properties>
+    <dependencies>
+        <!--保持独立，只引入jeecg基础模块 -->
+        <dependency>
+            <groupId>com.nbcio.boot</groupId>
+            <artifactId>nbcio-boot-base-core</artifactId>
+        </dependency>
+        <!--引入微服务启动依赖 starter
+      <dependency>
+          <groupId>org.jeecgframework.boot</groupId>
+          <artifactId>nbcio-boot-starter-cloud</artifactId>
+      </dependency>
+        <dependency>
+            <groupId>org.jeecgframework.boot</groupId>
+            <artifactId>nbcio-boot-starter-job</artifactId>
+        </dependency>-->
+        <!--=======================================flow模块独立===================================-->
+        <dependency>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-engine</artifactId>
+            <scope>compile</scope>
+            <version>6.7.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mybatis</groupId>
+                    <artifactId>mybatis</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-spring-boot-starter-basic</artifactId>
+            <version>6.7.2</version>
+        </dependency>
+        <!--表达式解析工具-->
+        <dependency>
+            <groupId>org.eweb4j</groupId>
+            <artifactId>fel</artifactId>
+            <version>0.8</version>
+        </dependency>
+        <!--xml解析包：如果项目中已有，引起冲突，可注释-->
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.12.0</version>
+        </dependency>
+    </dependencies>
+</project>

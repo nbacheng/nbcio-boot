@@ -17,5 +17,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 public interface CesShopGoodsMapper extends BaseMapper<CesShopGoods> {
 
 	public List<CesShopGoodsVo> getByIds(@Param("idArray") String[] idArray);
+	public List<CesShopGoodsVo> getByCodes(@Param("codeArray") String[] codeArray);
 
 }

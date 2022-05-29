@@ -161,6 +161,23 @@ public class CesShopGoodsController extends JeecgController<CesShopGoods, ICesSh
 		}
 		return Result.OK(listcesShopGoods);
 	}
+	
+	/**
+	 * 通过ids查询
+	 *
+	 * @param codes
+	 * @return
+	 */
+	@AutoLog(value = "商品-通过codes查询")
+	@ApiOperation(value="商品-通过codes查询", notes="商品-通过codes查询")
+	@GetMapping(value = "/queryByCodes")
+	public Result<?> queryByCodes(@RequestParam(name="codes",required=true) String codes) {
+		List<CesShopGoodsVo> listcesShopGoods = cesShopGoodsService.getByCodes(codes);
+		if(listcesShopGoods.size()==0) {
+			return Result.error("未找到对应数据");
+		}
+		return Result.OK(listcesShopGoods);
+	}
 
     /**
     * 导出excel

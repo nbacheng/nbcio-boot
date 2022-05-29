@@ -17,4 +17,6 @@ public interface ICesShopGoodsService extends IService<CesShopGoods> {
 
 	List<CesShopGoodsVo> getByIds(String ids);
 
+	List<CesShopGoodsVo> getByCodes(String codes);
+
 }

@@ -8,5 +8,14 @@
         </foreach>
         )
         order by id desc
-    </select>		 
+    </select>	
+    
+    <select id="getByCodes" resultType="com.nbcio.modules.demo.test.vo.CesShopGoodsVo">
+        select a.*, 1 as num, a.price*1 as zongprice from ces_shop_goods a where a.code in (
+        <foreach collection="codeArray" item="code" separator=",">
+            #{code}
+        </foreach>
+        )
+        order by code desc
+    </select>	 
 </mapper>

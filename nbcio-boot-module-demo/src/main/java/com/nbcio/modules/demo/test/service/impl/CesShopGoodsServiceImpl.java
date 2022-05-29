@@ -29,5 +29,11 @@ public class CesShopGoodsServiceImpl extends ServiceImpl<CesShopGoodsMapper, Ces
 		 String [] idArray=ids.split(",");
 	     return  cesShopGoodsMapper.getByIds(idArray);
 	}
+	@Override
+	public List<CesShopGoodsVo> getByCodes(String codes) {
+		// TODO Auto-generated method stub
+		String [] codeArray=codes.split(",");
+	     return  cesShopGoodsMapper.getByCodes(codeArray);
+	}
 
 } 

@@ -14,6 +14,6 @@ import com.nbcio.modules.estar.entity.OaSubdep;
  * @Version: V1.0
  */
 public interface OaSubdepMapper extends BaseMapper<OaSubdep> {
-	public List<OaSubdep> getSubDep(@Param("upperno") String upperno);
+	public List<OaSubdep> getSubDep(@Param("depno") String depno);
 	public List<OaSubdep> getDep(@Param("depno") String depno);
 }

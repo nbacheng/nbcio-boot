@@ -82,7 +82,7 @@ public class CesOrderMainController {
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		//by nbacheng for java.sql.SQLSyntaxErrorException: ORA-00918: 未明确定义列
+		//by nbacheng for java.sql.SQLSyntaxErrorException: ORA-00918: 未明确定义列  修正oracle版本问题
 		Map<String, String[]> ParameterMap = new HashMap<String, String[]>(req.getParameterMap());
 		String[] column = new String[]{""};
 		if(ParameterMap!=null&&  ParameterMap.containsKey("column")) {

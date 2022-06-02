@@ -36,15 +36,21 @@ public class OaSalary implements Serializable {
     @ApiModelProperty(value = "主键")
     private java.lang.String id;
 	/**人员*/
-	@Excel(name = "人员", width = 15, dictTable = "sys_user", dicText = "realname", dicCode = "username")
-	@Dict(dictTable = "sys_user", dicText = "realname", dicCode = "username")
+	@Excel(name = "人员", width = 15)
     @ApiModelProperty(value = "人员")
     private java.lang.String username;
+	/**姓名*/
+	@Excel(name = "姓名", width = 15)
+    @ApiModelProperty(value = "姓名")
+    private java.lang.String realname;
 	/**部门编号*/
-	@Excel(name = "部门编号", width = 15, dictTable = "sys_depart", dicText = "depart_name", dicCode = "id")
-	@Dict(dictTable = "sys_depart", dicText = "depart_name", dicCode = "id")
+	@Excel(name = "部门编号", width = 15)
     @ApiModelProperty(value = "部门编号")
     private java.lang.String orgCode;
+	/**部门名称*/
+	@Excel(name = "部门名称", width = 15)
+    @ApiModelProperty(value = "部门名称")
+    private java.lang.String depname;
 	/**年*/
 	@Excel(name = "年", width = 15)
     @ApiModelProperty(value = "年")
@@ -53,6 +59,10 @@ public class OaSalary implements Serializable {
 	@Excel(name = "月", width = 15)
     @ApiModelProperty(value = "月")
     private java.lang.Integer salarymonth;
+	/**人数*/
+	@Excel(name = "人数", width = 15)
+    @ApiModelProperty(value = "人数")
+    private java.lang.Integer rs;
 	/**本月实发工资*/
 	@Excel(name = "本月实发工资", width = 15)
     @ApiModelProperty(value = "本月实发工资")

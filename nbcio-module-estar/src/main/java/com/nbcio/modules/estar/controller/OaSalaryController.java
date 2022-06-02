@@ -1,37 +1,31 @@
 package com.nbcio.modules.estar.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.util.oConvertUtils;
 import com.nbcio.modules.estar.entity.OaSalary;
+import com.nbcio.modules.estar.entity.OaSubdep;
 import com.nbcio.modules.estar.service.IOaSalaryService;
-
+import com.nbcio.modules.estar.service.IOaSubdepService;
+import com.nbcio.modules.estar.util.ServiceResult;
+import com.nbcio.modules.estar.vo.OaSalaryTotal;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
-
-import org.jeecgframework.poi.excel.ExcelImportUtil;
-import org.jeecgframework.poi.excel.def.NormalExcelConstants;
-import org.jeecgframework.poi.excel.entity.ExportParams;
-import org.jeecgframework.poi.excel.entity.ImportParams;
-import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
+
 import org.springframework.web.servlet.ModelAndView;
-import com.alibaba.fastjson.JSON;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jeecg.common.aspect.annotation.AutoLog;
@@ -42,13 +36,15 @@ import org.jeecg.common.aspect.annotation.AutoLog;
  * @Date:   2022-05-12
  * @Version: V1.0
  */
-@Api(tags="OA工资表")
+@Api(tags = "OA钉钉工资审批数据接口")
 @RestController
 @RequestMapping("/estar/oaSalary")
 @Slf4j
 public class OaSalaryController extends JeecgController<OaSalary, IOaSalaryService> {
 	@Autowired
 	private IOaSalaryService oaSalaryService;
+	@Autowired
+	private IOaSubdepService  oaSubdepService;
 	
 	/**
 	 * 分页列表查询
@@ -66,11 +62,80 @@ public class OaSalaryController extends JeecgController<OaSalary, IOaSalaryServi
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
+	//by nbacheng for java.sql.SQLSyntaxErrorException: ORA-00918: 未明确定义列  修正oracle版本问题
+		Map<String, String[]> ParameterMap = new HashMap<String, String[]>(req.getParameterMap());
+		String[] column = new String[]{""};
+		if(ParameterMap!=null&&  ParameterMap.containsKey("column")) {
+			column[0] = ParameterMap.get("column")[0];
+			column[0] = "t."+ column[0];
+			ParameterMap.replace("column", column);
+			log.info("修改的排序规则>>列:" + ParameterMap.get("column")[0]);			
+		}
 		QueryWrapper<OaSalary> queryWrapper = QueryGenerator.initQueryWrapper(oaSalary, req.getParameterMap());
 		Page<OaSalary> page = new Page<OaSalary>(pageNo, pageSize);
-		IPage<OaSalary> pageList = oaSalaryService.page(page, queryWrapper);
+		//IPage<OaSalary> pageList = oaSalaryService.page(page, queryWrapper);
+		IPage<OaSalary> pageList = oaSalaryService.oaSalaryPageList(page, queryWrapper);
 		return Result.OK(pageList);
 	}
+	
+	/**
+	 * 根据年月部门获取薪资审批数据
+	 *
+	 * @param OaSalary
+	 * @param pageNo
+	 * @param pageSize
+	 * @param req
+	 * @return
+	 */
+	@AutoLog(value = "oa_salary-薪资审批数据")
+	@ApiOperation(value = "oa_salary-薪资审批数据", notes = "oa_salary-薪资审批数据")
+	@GetMapping(value = "/listsalarybydep")
+	public Result<?> getSalaryByDep(@RequestParam(name = "salaryyear") String salaryyear,
+			@RequestParam(name = "salarymonth") String salarymonth, @RequestParam(name = "depno") String depno) {
+
+		List<OaSalary> oaSalaryList = oaSalaryService.getSalaryByDep(Integer.valueOf(salaryyear), Integer.valueOf(salarymonth), depno);
+		return Result.OK(oaSalaryList);
+	}
+	
+	/**
+	 * 根据年月部门获取薪资审批数据并提交钉钉审批
+	 *
+	 * @param salaryyear,
+	 *            salarymonth, depno
+	 * @param req
+	 * @return
+	 */
+	@AutoLog(value = "oa_salarytotal-薪资数据钉钉审批")
+	@ApiOperation(value = "oa_salarytotal-薪资审批钉钉审批", notes = "oa_salarytotal-薪资数据钉钉审批")
+	@PostMapping(value = "/salaryapprove")
+	public ServiceResult<String> salaryapprove(@RequestBody JSONObject jsonObject) {
+		String salaryyear = jsonObject.getString("salaryyear");
+		String salarymonth = jsonObject.getString("salarymonth");
+		String depno = jsonObject.getString("depno");
+		return oaSalaryService.salaryApprove(Integer.valueOf(salaryyear), Integer.valueOf(salarymonth), depno);      
+	}
+
+
+	/**
+	 * 子部门查询
+	 *
+	 * @param oaSubdep
+	 * @param pageNo
+	 * @param pageSize
+	 * @param req
+	 * @return
+	 */
+	
+	@AutoLog(value = "oa_subdep-子部门查询")
+	@ApiOperation(value="oa_subdep-子部门查询", notes="oa_subdep-子部门查询")
+	@GetMapping(value = "/listsubdep")
+	public Result<?> GetSubDep(@RequestParam(name="depno") String depno,
+								   HttpServletRequest req) {
+		List<OaSubdep> oaSubdepList = oaSubdepService.getSubDep(depno);
+		return Result.OK(oaSubdepList);
+	}
+
+
 	
 	/**
 	 *   添加

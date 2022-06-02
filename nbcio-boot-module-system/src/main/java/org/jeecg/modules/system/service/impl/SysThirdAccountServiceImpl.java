@@ -116,8 +116,8 @@ public class SysThirdAccountServiceImpl extends ServiceImpl<SysThirdAccountMappe
     @Override
     public SysThirdAccount getOneBySysUserId(String sysUserId, String thirdType) {
         LambdaQueryWrapper<SysThirdAccount> queryWrapper = new LambdaQueryWrapper<>();
-        //queryWrapper.last("limit 1");  // add by nbacheng 有两条只取一条记录（钉钉一个人可能属于两个部门里）
-        queryWrapper.last("and rownum = 1"); // for oracle 一条记录 
+        queryWrapper.last("limit 1");  // add by nbacheng 有两条只取一条记录（钉钉一个人可能属于两个部门里）
+        //queryWrapper.last("and rownum = 1"); // for oracle 用and rownum = 1 mysql用limit 1
         queryWrapper.eq(SysThirdAccount::getSysUserId, sysUserId);
         queryWrapper.eq(SysThirdAccount::getThirdType, thirdType);
         return super.getOne(queryWrapper);
@@ -126,8 +126,8 @@ public class SysThirdAccountServiceImpl extends ServiceImpl<SysThirdAccountMappe
     @Override
     public SysThirdAccount getOneByThirdUserId(String thirdUserId, String thirdType) {
         LambdaQueryWrapper<SysThirdAccount> queryWrapper = new LambdaQueryWrapper<>();
-        //queryWrapper.last("limit 1");  // add by nbacheng 有两条只取一条记录（钉钉一个人可能属于两个部门里）
-        queryWrapper.last("and rownum = 1"); // for oracle 一条记录 
+        queryWrapper.last("limit 1");  // add by nbacheng 有两条只取一条记录（钉钉一个人可能属于两个部门里）
+        //queryWrapper.last("and rownum = 1"); for oracle 用and rownum = 1 mysql用limit 1
         queryWrapper.eq(SysThirdAccount::getThirdUserId, thirdUserId);
         queryWrapper.eq(SysThirdAccount::getThirdType, thirdType);
         return super.getOne(queryWrapper);

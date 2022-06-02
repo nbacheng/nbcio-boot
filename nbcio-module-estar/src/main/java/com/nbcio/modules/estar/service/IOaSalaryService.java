@@ -1,7 +1,15 @@
 package com.nbcio.modules.estar.service;
 
-import com.nbcio.modules.estar.entity.OaSalary;
+
+import java.util.List;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.nbcio.modules.estar.entity.OaSalary;
+import com.nbcio.modules.estar.util.ServiceResult;
+import com.nbcio.modules.estar.vo.OaSalaryTotal;
 
 /**
  * @Description: OA工资表
@@ -11,4 +19,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IOaSalaryService extends IService<OaSalary> {
 
+	IPage<OaSalary> oaSalaryPageList(Page<OaSalary> page, QueryWrapper<OaSalary> queryWrapper);
+
+	List<OaSalary> getSalaryByDep(Integer salaryyear, Integer salarymonth, String depno);
+
+	ServiceResult<String> salaryApprove(Integer salaryyear, Integer salarymonth, String depno);
+	
 }

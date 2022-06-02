@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.nbcio.modules.estar.mapper.OaSubdepMapper">
-  	<!-- 根据部门编号获取子部门编号及名称-->
+    <!-- 根据部门编号获取子部门编号及名称-->
 	<select id="getSubDep" resultType="com.nbcio.modules.estar.entity.OaSubdep">
-		select org_code depno,depart_name depname from sys_depart where  parent_id=#{upperno} order by org_code
+        select id depno,depart_name depname from ( select t1.id,t1.depart_name, if(find_in_set(parent_id, @pids) > 0,@pids := concat(@pids, ',', id),0) as ischild
+	      from ( select id, parent_id, depart_name from sys_depart t order by parent_id, id ) t1,( select @pids := #{depno}) t2 ) t3
+          where ischild != 0       
 	</select> 
 	
 	<!-- 根据部门编号获取部门编号及名称-->
 	<select id="getDep" resultType="com.nbcio.modules.estar.entity.OaSubdep">
-		select org_code depno,depart_name depname from sys_depart where id=#{depno} order by org_code
-	</select> 
+		select id depno,depart_name depname from sys_depart where id=#{depno} order by org_code
+	</select>   
 </mapper>

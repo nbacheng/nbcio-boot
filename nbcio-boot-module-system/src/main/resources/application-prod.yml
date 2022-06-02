@@ -315,7 +315,7 @@ third-app:
     DINGTALK:
       enabled: true
       # appKey
-      client-id: dingaii70403vq3eafof
+      client-id: dingrclmpcbhnquxtpsi
       # appSecret
-      client-secret: dr-U5LuqHZ4Ygs2PSsY_DRwYt_D8WFPHvpl5a2fBwLCTO-UN8F1Jey1ZMzbbRzRz
-      agent-id: 1449967715
+      client-secret: UT9T-zTD82wqMZc_IJl5qoSUaijoy1_YvN1MKU_7a-_cf9SEbB9erZpZ8wq9HKrl
+      agent-id: 1105646298

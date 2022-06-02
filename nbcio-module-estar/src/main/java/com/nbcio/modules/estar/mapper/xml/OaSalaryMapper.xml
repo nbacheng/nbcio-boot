@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.nbcio.modules.estar.mapper.OaSalaryMapper">
-
+    <select id="oaSalaryPageList" resultType="com.nbcio.modules.estar.entity.OaSalary">
+        select t.*,b.depart_name depname, c.realname realname
+        from oa_salary t left join sys_depart b on b.id = t.org_code 
+        left join sys_user c on c.username = t.username 
+            ${ew.customSqlSegment}
+    </select>
+    
+    <!-- 根据年,月,部门 查询 -->
+	<select id="getSalaryByDep" resultType="com.nbcio.modules.estar.entity.OaSalary">
+        select a.*,b.realname realname,c.depart_name depname from oa_salary a left join sys_user b on a.username=b.username left join sys_depart c on a.org_code= c.id
+               where a.salaryyear =#{salaryyear} and a.salarymonth= #{salarymonth} and  a.org_code=#{depno}   order by username       -->
+	</select> 
+    
 </mapper>

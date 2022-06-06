@@ -11,11 +11,11 @@ import com.dingtalk.api.response.OapiProcessinstanceGetResponse;
 import com.dingtalk.api.response.OapiProcessinstanceGetResponse.ProcessInstanceTopVo;
 import org.jeecg.common.aspect.annotation.AutoLog;
 
+import com.nbcio.modules.estar.apithird.service.IEstarThirdService;
 import com.nbcio.modules.estar.config.Constant;
 import com.nbcio.modules.estar.config.URLConstant;
 import com.nbcio.modules.estar.model.ProcessInstanceInputVO;
 import com.nbcio.modules.estar.service.IOaProcessinstanceService;
-import com.nbcio.modules.estar.util.AccessTokenUtil;
 import com.nbcio.modules.estar.util.LogFormatter;
 import com.nbcio.modules.estar.util.ServiceResult;
 import com.nbcio.modules.estar.util.ServiceResultCode;
@@ -45,6 +45,9 @@ public class ProcessinstanceController {
 
 	@Autowired
 	private IOaProcessinstanceService oaProcessinstanceService;
+	
+	@Autowired 
+	IEstarThirdService iEstarThirdService;
 	
 	/**
 	 * 欢迎页面
@@ -78,7 +81,7 @@ public class ProcessinstanceController {
 			request.setCcList(processInstance.getOriginatorUserId());
 			request.setCcPosition("FINISH");
 
-			OapiProcessinstanceCreateResponse response = client.execute(request, AccessTokenUtil.getToken());
+			OapiProcessinstanceCreateResponse response = client.execute(request, iEstarThirdService.getToken());
 
 			if (response.getErrcode().longValue() != 0) {
 				return ServiceResult.failure(String.valueOf(response.getErrorCode()), response.getErrmsg());
@@ -107,7 +110,7 @@ public class ProcessinstanceController {
 			DingTalkClient client = new DefaultDingTalkClient(URLConstant.URL_PROCESSINSTANCE_GET);
 			OapiProcessinstanceGetRequest request = new OapiProcessinstanceGetRequest();
 			request.setProcessInstanceId(instanceId);
-			OapiProcessinstanceGetResponse response = client.execute(request, AccessTokenUtil.getToken());
+			OapiProcessinstanceGetResponse response = client.execute(request, iEstarThirdService.getToken());
 			if (response.getErrcode().longValue() != 0) {
 				return ServiceResult.failure(String.valueOf(response.getErrorCode()), response.getErrmsg());
 			}
@@ -134,7 +137,7 @@ public class ProcessinstanceController {
 			DingTalkClient client = new DefaultDingTalkClient(URLConstant.URL_PROCESSINSTANCE_GET);
 			OapiProcessinstanceGetRequest request = new OapiProcessinstanceGetRequest();
 			request.setProcessInstanceId(instanceId);
-			OapiProcessinstanceGetResponse response = client.execute(request, AccessTokenUtil.getToken());
+			OapiProcessinstanceGetResponse response = client.execute(request, iEstarThirdService.getToken());
 			if (response.getErrcode().longValue() != 0) {
 				return ServiceResult.failure(String.valueOf(response.getErrorCode()), response.getErrmsg());
 			}

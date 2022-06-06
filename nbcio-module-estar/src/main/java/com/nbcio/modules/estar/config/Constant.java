@@ -1,8 +1,11 @@
 package com.nbcio.modules.estar.config;
 
+import org.springframework.beans.factory.annotation.Value;
+
 /**
  * 项目中的常量定义类
  */
+
 public class Constant {
     /**
      * 企业corpid, 需要修改成开发者所在企业
@@ -11,11 +14,11 @@ public class Constant {
     /**
      * 应用的AppKey，登录开发者后台，点击应用管理，进入应用详情可见
      */
-    public static final String APPKEY = "dingrclmpcbhnquxtpsi";
+    //public static final String APPKEY = "dingrclmpcbhnquxtpsi";
     /**
      * 应用的AppSecret，登录开发者后台，点击应用管理，进入应用详情可见
      */
-    public static final String APPSECRET = "UT9T-zTD82wqMZc_IJl5qoSUaijoy1_YvN1MKU_7a-_cf9SEbB9erZpZ8wq9HKrl";
+    //public static final String APPSECRET = "UT9T-zTD82wqMZc_IJl5qoSUaijoy1_YvN1MKU_7a-_cf9SEbB9erZpZ8wq9HKrl";
 
     /**
      * 数据加密密钥。用于回调数据的加密，长度固定为43个字符，从a-z, A-Z, 0-9共62个字符中选取,您可以随机生成
@@ -30,7 +33,7 @@ public class Constant {
     /**
      * 应用的agentdId，登录开发者后台可查看
      */
-    public static final Long AGENTID = 1105646298L;
+    //public static final Long AGENTID = 1105646298L;
 
     /**
      * 审批模板唯一标识，可以在审批管理后台找到  工资审批，通过postman api请求或通过官方的Api Explorer获取

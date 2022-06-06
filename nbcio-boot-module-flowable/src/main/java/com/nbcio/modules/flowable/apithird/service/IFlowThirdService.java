@@ -7,7 +7,7 @@ import com.nbcio.modules.flowable.apithird.entity.SysRole;
 import com.nbcio.modules.flowable.apithird.entity.SysUser;
 
 /**
- * 业务层需实现的接口定义<br/>
+ * 业务层需实现的接口定义
  *  支撑工作流模块与业务的关联
  * @author pmc
  */

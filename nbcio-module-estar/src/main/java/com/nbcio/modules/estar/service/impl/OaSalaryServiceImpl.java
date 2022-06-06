@@ -1,5 +1,6 @@
 package com.nbcio.modules.estar.service.impl;
 
+import com.nbcio.modules.estar.apithird.service.IEstarThirdService;
 import com.nbcio.modules.estar.config.Constant;
 import com.nbcio.modules.estar.config.URLConstant;
 import com.nbcio.modules.estar.entity.OaSalary;
@@ -9,7 +10,6 @@ import com.nbcio.modules.estar.model.ProcessInstanceInputVO;
 import com.nbcio.modules.estar.service.IOaSalaryService;
 import com.nbcio.modules.estar.service.IOaSalaryTotalService;
 import com.nbcio.modules.estar.service.IOaSubdepService;
-import com.nbcio.modules.estar.util.AccessTokenUtil;
 import com.nbcio.modules.estar.util.LogFormatter;
 import com.nbcio.modules.estar.util.LogFormatter.LogEvent;
 import com.nbcio.modules.estar.util.ServiceResult;
@@ -64,6 +64,9 @@ public class OaSalaryServiceImpl extends ServiceImpl<OaSalaryMapper, OaSalary> i
 	
 	@Autowired	
 	FlowDefinitionServiceImpl flowDefinitionServiceImpl;
+	
+	@Autowired 
+	IEstarThirdService iEstarThirdService;
 
 
 
@@ -282,7 +285,7 @@ public class OaSalaryServiceImpl extends ServiceImpl<OaSalaryMapper, OaSalary> i
 		        request.setApproversV2(processInstanceApproverVoList);
 				
 		        request.setFormComponentValues(formComponentValueVoList);
-				OapiProcessinstanceCreateResponse response = client.execute(request, AccessTokenUtil.getToken());
+				OapiProcessinstanceCreateResponse response = client.execute(request, iEstarThirdService.getToken());
 
 				if (response.getErrcode().longValue() != 0) {
 					return ServiceResult.failure(String.valueOf(response.getErrorCode()), response.getErrmsg());

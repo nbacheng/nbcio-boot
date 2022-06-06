@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nbcio.modules.estar.mapper.OaSalaryTotalMapper">
+   
+    <!-- 根据年月、子部门编号获取工资汇总表-->
+    <select id="getTotalSalaryBySubDep" resultType="com.nbcio.modules.estar.vo.OaSalaryTotal">
+        select b.depart_name depname,count(*) rs, sum(bysfgz) bysfgz,sum(byjbf) byjbf,sum(bysfjj) bysfjj,
+                             sum(sysfgz) sysfgz,sum(syjbf) syjbf,sum(sysfjj) sysfjj 
+            from oa_salary a  left join sys_depart b on b.id =a.org_code where a.org_code = #{depno} 
+            and salaryyear = #{salaryyear} and salarymonth = #{salarymonth} GROUP BY b.depart_name
+	</select>
+	<!--<select id="getTotalSalaryBySubDep" resultType="com.nbcio.modules.estar.vo.OaSalaryTotal">
+        select b.depart_name depname,count(*) rs, sum(bysfgz) bysfgz,sum(byjbf) byjbf,sum(bysfjj) bysfjj,
+                             sum(sysfgz) sysfgz,sum(syjbf) syjbf,sum(sysfjj) sysfjj 
+            from oa_salary a  left join sys_depart b on b.id =a.org_code where a.org_code in (
+            select id from ( select t1.id, if(find_in_set(parent_id, @pids) > 0,@pids := concat(@pids, ',', id),0) as ischild
+	          from ( select id, parent_id from sys_depart t order by parent_id, id ) t1,( select @pids := #{depno}) t2 ) t3
+              where ischild != 0 ) and salaryyear = #{salaryyear} and salarymonth = #{salarymonth} GROUP BY b.depart_name
+	</select> --> 
+	
+    
+</mapper>

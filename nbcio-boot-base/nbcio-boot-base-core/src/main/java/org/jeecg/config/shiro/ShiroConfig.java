@@ -72,6 +72,8 @@ public class ShiroConfig {
         }
         // 配置不会被拦截的链接 顺序判断
         filterChainDefinitionMap.put("/flowable/definition/readImageByDataId/**", "anon"); //cas验证登录
+        //filterChainDefinitionMap.put("/flowable/task/record/index", "anon"); //流程申请
+        //filterChainDefinitionMap.put("/tool/build/index", "anon"); //表单设计
         filterChainDefinitionMap.put("/sys/cas/client/validateLogin", "anon"); //cas验证登录
         filterChainDefinitionMap.put("/sys/randomImage/**", "anon"); //登录验证码接口排除
         filterChainDefinitionMap.put("/sys/checkCaptcha", "anon"); //登录验证码接口排除

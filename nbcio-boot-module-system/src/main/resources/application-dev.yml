@@ -185,7 +185,7 @@ jeecg :
   # 是否启用安全模式
   safeMode: false
   # 签名密钥串(前后端要一致，正式发布请自行修改)
-  signatureSecret: birdgf05f1c54d63749eda95f9fa6d49v442agfbird
+  signatureSecret: nbcioestar05f1c54d63749eda95f9fa6d49v442aestarnbcio
   # 本地：local\Minio：minio\阿里云：alioss
   uploadType: minio
   path :
@@ -222,7 +222,7 @@ jeecg :
     minio_url: 192.168.199.152:9010
     minio_name: admin
     minio_pass: admin321
-    bucketName: bird
+    bucketName: nbcio
   #大屏报表参数设置
   jmreport:
     mode: dev

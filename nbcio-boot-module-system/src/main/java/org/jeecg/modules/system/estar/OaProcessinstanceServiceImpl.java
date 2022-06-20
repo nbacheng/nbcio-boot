@@ -1,4 +1,4 @@
-package org.jeecg.modules.system.bird;
+package org.jeecg.modules.system.estar;
 
 
 import java.util.ArrayList;

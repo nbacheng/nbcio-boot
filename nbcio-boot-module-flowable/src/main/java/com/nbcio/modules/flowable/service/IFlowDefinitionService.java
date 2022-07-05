@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.common.api.vo.Result;
 import com.nbcio.modules.flowable.domain.dto.FlowProcDefDto;
+import com.nbcio.modules.flowable.domain.vo.FlowTaskVo;
 
 import java.io.IOException;
 import java.io.InputStream;

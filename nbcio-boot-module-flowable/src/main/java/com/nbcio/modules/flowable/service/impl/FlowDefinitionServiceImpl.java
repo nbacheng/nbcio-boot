@@ -31,6 +31,7 @@ import com.nbcio.modules.flowable.service.ISysCustomFormService;
 import com.nbcio.modules.flowable.service.ISysDeployFormService;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.bpmn.model.ExclusiveGateway;
 import org.flowable.bpmn.model.FlowElement;
@@ -52,7 +53,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
+//import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -345,54 +346,16 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
         String dataId = variables.get("dataId").toString();
         //如果保存数据前未调用必调的FlowCommonService.initActBusiness方法，就会有问题
         FlowMyBusiness business = flowMyBusinessService.getByDataId(dataId);
-        //设置数据
-        FlowNextDto nextFlowNode = flowTaskService.getNextFlowNode(task.getId(), variables);
-        taskService.complete(task.getId(), variables);
-        //下一个实例节点
-        Task task2 = taskService.createTaskQuery().processInstanceId(processInstance.getProcessInstanceId()).active().singleResult();
-        String doneUsers = business.getDoneUsers();
-        // 处理过流程的人
-        JSONArray doneUserList = new JSONArray();
-        if (StrUtil.isNotBlank(doneUsers)){
-            doneUserList = JSON.parseArray(doneUsers);
-        }
-        if (!doneUserList.contains(sysUser.getUsername())){
-            doneUserList.add(sysUser.getUsername());
-        }
-
-        if (nextFlowNode!=null){
-            //**有下一个节点
-            UserTask nextTask = nextFlowNode.getUserTask();
-            //能够处理下个节点的候选人
-            List<SysUser> nextFlowNodeUserList = nextFlowNode.getUserList();
-            List<String> collect_username = nextFlowNodeUserList.stream().map(SysUser::getUsername).collect(Collectors.toList());
-            
-            //collect_username转换成realname
-            List<String> newusername = new ArrayList<String>();
-            for (String oldUser : collect_username) {
-            	SysUser oldsysUser = iFlowThirdService.getUserByUsername(oldUser);
-                newusername.add(oldsysUser.getRealname());
-            }
-            business.setProcessDefinitionId(procDefId)
-                    .setProcessInstanceId(processInstance.getProcessInstanceId())
-                    .setActStatus(ActStatus.start)
-                    .setProposer(sysUser.getUsername())
-                    .setTaskId(task2.getId())
-                    .setTaskName(nextTask.getName())
-                    .setTaskNameId(nextTask.getId())
-                    .setPriority(nextTask.getPriority())
-                    .setDoneUsers(doneUserList.toJSONString())
-                    .setTodoUsers(JSON.toJSONString(newusername))
-            ;
-        } else {
-        //    **没有下一个节点，流程已经结束了
-            business.setProcessDefinitionId(procDefId)
-                    .setProcessInstanceId(processInstance.getProcessInstanceId())
-                    .setActStatus(ActStatus.pass)
-                    .setProposer(sysUser.getUsername())
-                    .setDoneUsers(doneUserList.toJSONString())
-            ;
-        }
+        business.setProcessDefinitionId(procDefId)
+                .setProcessInstanceId(processInstance.getProcessInstanceId())
+                .setActStatus(ActStatus.start)
+                .setProposer(sysUser.getUsername())
+                .setTaskId(task.getId())
+                .setTaskName(task.getName())
+                .setTaskNameId(task.getId())
+                .setPriority(String.valueOf(task.getPriority()))
+                .setDoneUsers("")
+                .setTodoUsers(JSON.toJSONString(sysUser.getRealname()));
         flowMyBusinessService.updateById(business);
         //spring容器类名
         String serviceImplNameafter = business.getServiceImplName();
@@ -400,9 +363,9 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
         // 流程处理完后，进行回调业务层
         business.setValues(variables);
         if (flowCallBackServiceafter!=null)flowCallBackServiceafter.afterFlowHandle(business);
-        return Result.OK("流程启动成功");
+        return Result.OK("流程启动成功,请在到我的待办里进行流程的提交流转.");
     }
-
+    
 	/**
 	 * 根据流程定义ID启动流程实例，这个与业务dataid无关，直接通过发布定义流程进行发起实例
 	 *  add by nbacheng
@@ -437,13 +400,13 @@ public class FlowDefinitionServiceImpl extends FlowServiceFactory implements IFl
 				taskService.addComment(task.getId(), processInstance.getProcessInstanceId(),
 						FlowComment.NORMAL.getType(), sysUser.getRealname() + "发起流程申请");
 				taskService.setAssignee(task.getId(), sysUser.getUsername());
-				 taskService.complete(task.getId(), variables);
+				//taskService.complete(task.getId(), variables);
 			}
 
 			// 设置数据
 			//FlowNextDto nextFlowNode = flowTaskService.getNextFlowNode(task.getId(), variables);
 			//taskService.complete(task.getId(), variables);
-			return Result.OK("流程启动成功");
+			return Result.OK("流程启动成功,请在到我的待办里进行流程的提交流转.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Result.error("流程启动错误");

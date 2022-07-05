@@ -233,6 +233,8 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                 values = flowBeforeParamsValues;
             }
            
+            // 被委派任务的办理: 办理完成后，委派任务会自动回到委派人的任务中
+            //处理下个节点的候选人，对于委派来说，实际上就是当前节点，因为委派完成后相当于驳回到当前节点了
             taskService.resolveTask(taskVo.getTaskId(), values);
                       
             String doneUsers = business.getDoneUsers();
@@ -245,7 +247,6 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                 doneUserList.add(loginUser.getUsername());
             }
             
-            //处理下个节点的候选人，对于委派来说，实际上就是当前节点，因为委派完成后相当于驳回到当前节点了
             Task task2 = taskService.createTaskQuery().processInstanceId(business.getProcessInstanceId()).active().singleResult();
             
             SysUser sysUser = iFlowThirdService.getUserByUsername(task2.getAssignee());
@@ -318,9 +319,17 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         //    业务层有设置变量，使用业务层的变量
             values = flowBeforeParamsValues;
         }
+             
+        FlowNextDto nextFlowNode = this.getNextFlowNode(task.getId(), values);
+        
         taskService.complete(taskVo.getTaskId(), values);
         
-        FlowNextDto nextFlowNode = this.getNextFlowNode(task.getId(), values);
+        if(taskVo.getValues() !=null) {//对候选组人员选择的支持
+            Task tasknext = taskService.createTaskQuery().processInstanceId(taskVo.getInstanceId()).active().singleResult();
+            if(taskVo.getValues().containsKey("approval")) {//前端传回的变量值
+          	 taskService.setAssignee(tasknext.getId(), taskVo.getValues().get("approval").toString());
+            }
+        }   
         //下一个实例节点
         Task task2 = taskService.createTaskQuery().processInstanceId(business.getProcessInstanceId()).active().singleResult();
         // 下个节点候选人，目前没有实现这功能，返回null
@@ -328,6 +337,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         if(task2!=null){
             beforeParamsCandidateUsernames = flowCallBackService.flowCandidateUsernamesOfTask(task2.getTaskDefinitionKey(),taskVo.getValues());
         }
+        
         String doneUsers = business.getDoneUsers();
         // 处理过流程的人
         JSONArray doneUserList = new JSONArray();
@@ -345,9 +355,15 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             List<String> collect_username = nextFlowNodeUserList.stream().map(SysUser::getUsername).collect(Collectors.toList());
             //collect_username转换成realname
             List<String> newusername = new ArrayList<String>();
-            for (String oldUser : collect_username) {
+            if(taskVo.getValues().containsKey("approval")) {//前端传回的变量值
+            	SysUser sysUser = iFlowThirdService.getUserByUsername(taskVo.getValues().get("approval").toString());
+            	newusername.add(sysUser.getRealname());
+            }
+            else {
+            	for (String oldUser : collect_username) {
             	SysUser sysUser = iFlowThirdService.getUserByUsername(oldUser);
                 newusername.add(sysUser.getRealname());
+                }
             }
             business.setActStatus(ActStatus.doing)
                     .setTaskId(task2.getId())
@@ -1091,8 +1107,16 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
          Task task = taskService.createTaskQuery().taskId(flowTaskVo.getTaskId()).singleResult();
          
     	 SysUser loginUser = iFlowThirdService.getLoginUser();
-    	 SysUser oldUser = iFlowThirdService.getUserByUsername(task.getAssignee());
-         String delegatecomment = oldUser.getRealname() + "经由"+ loginUser.getRealname() + "委派给" + targetUser.getRealname() + "意见:";
+    	 String delegatecomment;
+    	 if(task.getAssignee() != null ) {
+    		 SysUser oldUser = iFlowThirdService.getUserByUsername(task.getAssignee());
+             delegatecomment = oldUser.getRealname() + "经由"+ loginUser.getRealname() + "委派给" + targetUser.getRealname() + "意见:";
+    		 delegatecomment = "经由"+ loginUser.getRealname() + "委派给" + targetUser.getRealname() + "意见:";
+    	 }
+    	 else {
+    		 delegatecomment = "经由"+ loginUser.getRealname() + "委派给" + targetUser.getRealname() + "意见:";
+    	 }
+    	
     	 if(StrUtil.isNotBlank(flowTaskVo.getDataId())){
     		
     		
@@ -1189,9 +1213,15 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     	SysUser targetUser = iFlowThirdService.getUserByUsername(flowTaskVo.getAssignee());
     	// 当前任务 task
         Task task = taskService.createTaskQuery().taskId(flowTaskVo.getTaskId()).singleResult();
-        SysUser oldUser = iFlowThirdService.getUserByUsername(task.getAssignee());
-        String assigncomment = oldUser.getRealname() + "经由"+ loginUser.getRealname() + "转办给" + targetUser.getRealname() + "意见:";
-        
+        String assigncomment;
+        if( task.getAssignee() != null ) {
+        	SysUser oldUser = iFlowThirdService.getUserByUsername(task.getAssignee());
+            assigncomment = oldUser.getRealname() + "经由"+ loginUser.getRealname() + "转办给" + targetUser.getRealname() + "意见:";
+        }
+        else {
+        	assigncomment =  "经由"+ loginUser.getRealname() + "转办给" + targetUser.getRealname() + "意见:";
+        }
+       
     	if(StrUtil.isNotBlank(flowTaskVo.getDataId())){
     		
     		taskService.addComment(flowTaskVo.getTaskId(), flowTaskVo.getInstanceId(), FlowComment.ASSIGN.getType(),assigncomment);

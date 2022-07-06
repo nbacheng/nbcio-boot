@@ -82,7 +82,7 @@ Nbcio-Boot V1.0.0 NBCIO亿事达企业管理平台
 
    5、以后希望能增加OA和ERP等相关功能。
    
-     https://img-blog.csdnimg.cn/863a745945624a45acfe8e7856c6134e.png
+     ![输入图片说明](https://img-blog.csdnimg.cn/863a745945624a45acfe8e7856c6134e.png "在这里输入图片标题")
 	 
 	 https://img-blog.csdnimg.cn/898e102ca3d5452bb2d23d989be008ab.png
 	 

@@ -74,6 +74,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.sound.midi.SoundbankResource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -532,6 +533,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         }));
         // 设置驳回意见
         currentTaskIds.forEach(item -> taskService.addComment(item, task.getProcessInstanceId(), FlowComment.REJECT.getType(), flowTaskVo.getComment()));
+        
         SysUser loginUser = iFlowThirdService.getLoginUser();
         try {
             // 设置处理人
@@ -550,6 +552,51 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                         .processInstanceId(task.getProcessInstanceId())
                         .moveActivityIdsToSingleActivityId(currentIds, targetIds.get(0)).changeState();
             }
+            
+            // 驳回到了上一个节点等待处理
+            Task targetTask = taskService.createTaskQuery().processInstanceId(flowTaskVo.getInstanceId()).active().singleResult();
+            FlowElement targetElement = null;
+            if (allElements != null) {
+                for (FlowElement flowElement : allElements) {
+                    // 类型为用户节点
+                    if (flowElement.getId().equals(targetTask.getTaskDefinitionKey())) {
+                        // 获取节点信息
+                        targetElement = flowElement;
+                    }
+                }
+            }
+
+         // 流程发起人
+            ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(targetTask.getProcessInstanceId()).singleResult();
+            String startUserId = processInstance.getStartUserId();
+            
+            if (targetElement!=null){
+                UserTask targetUserTask = (UserTask) targetElement;
+                
+                if (StrUtil.equals(targetUserTask.getIncomingFlows().get(0).getSourceRef(),"startNode1")) {//是否为发起人节点
+                    //开始节点 设置处理人为申请人
+                    taskService.setAssignee(targetTask.getId(), startUserId);
+                } else {
+                    List<SysUser> sysUserFromTask = getSysUserFromTask(targetUserTask);
+                    List<String> collect_username = sysUserFromTask.stream().map(SysUser::getUsername).collect(Collectors.toList());
+                    //collect_username转换成realname
+                    List<String> newusername = new ArrayList<String>();
+                    for (String oldUser : collect_username) {
+                    	SysUser sysUser = iFlowThirdService.getUserByUsername(oldUser);
+                        newusername.add(sysUser.getRealname());
+                    }
+             
+                    // 删除后重写
+                    for (String oldUser : collect_username) {
+                        taskService.deleteCandidateUser(targetTask.getId(),oldUser);
+                    }
+                  
+                    for (String oldUser : collect_username) {
+                        taskService.addCandidateUser(targetTask.getId(),oldUser);
+                    }
+                }
+            }
+            
         } catch (FlowableObjectNotFoundException e) {
             throw new CustomException("未找到流程实例，流程可能已发生变化");
         } catch (FlowableException e) {
@@ -683,7 +730,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             //如果保存数据前未调用必调的FlowCommonService.initActBusiness方法，就会有问题
             FlowMyBusiness business = flowMyBusinessService.getByDataId(dataId);
             // 驳回到了上一个节点等待处理
-            Task task2 = taskService.createTaskQuery().processInstanceId(business.getProcessInstanceId()).active().singleResult();
+            Task targetTask = taskService.createTaskQuery().processInstanceId(business.getProcessInstanceId()).active().singleResult();
             //spring容器类名
             String serviceImplName = business.getServiceImplName();
             FlowCallBackServiceI flowCallBackService = (FlowCallBackServiceI) SpringContextUtils.getBean(serviceImplName);
@@ -694,7 +741,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             } else {
                 values.put("dataId",dataId);
             }
-            List<String> beforeParamsCandidateUsernames = flowCallBackService.flowCandidateUsernamesOfTask(task2.getTaskDefinitionKey(), values);
+            List<String> beforeParamsCandidateUsernames = flowCallBackService.flowCandidateUsernamesOfTask(targetTask.getTaskDefinitionKey(), values);
             //设置数据
             String doneUsers = business.getDoneUsers();
             // 处理过流程的人
@@ -706,32 +753,32 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                 doneUserList.add(loginUser.getUsername());
             }
             business.setActStatus(ActStatus.reject)
-                    .setTaskId(task2.getId())
-                    .setTaskNameId(task2.getTaskDefinitionKey())
-                    .setTaskName(task2.getName())
+                    .setTaskId(targetTask.getId())
+                    .setTaskNameId(targetTask.getTaskDefinitionKey())
+                    .setTaskName(targetTask.getName())
                     .setDoneUsers(doneUserList.toJSONString())
             ;
             FlowElement targetElement = null;
             if (allElements != null) {
                 for (FlowElement flowElement : allElements) {
                     // 类型为用户节点
-                    if (flowElement.getId().equals(task2.getTaskDefinitionKey())) {
+                    if (flowElement.getId().equals(targetTask.getTaskDefinitionKey())) {
                         // 获取节点信息
                         targetElement = flowElement;
-                    }
+                    } 
                 }
             }
 
             if (targetElement!=null){
-                UserTask targetTask = (UserTask) targetElement;
-                business.setPriority(targetTask.getPriority());
+                UserTask targetUserTask = (UserTask) targetElement;
+                business.setPriority(targetUserTask.getPriority());
 
-                if (StrUtil.equals(business.getTaskNameId(),ProcessConstants.START_NODE)){
+                if (StrUtil.equals(targetUserTask.getIncomingFlows().get(0).getSourceRef(),"startNode1")) {//是否为发起人节点
                     //    开始节点。设置处理人为申请人
                     business.setTodoUsers(JSON.toJSONString(Lists.newArrayList(business.getProposer())));
                     taskService.setAssignee(business.getTaskId(),business.getProposer());
                 } else {
-                    List<SysUser> sysUserFromTask = getSysUserFromTask(targetTask);
+                    List<SysUser> sysUserFromTask = getSysUserFromTask(targetUserTask);
                     List<String> collect_username = sysUserFromTask.stream().map(SysUser::getUsername).collect(Collectors.toList());
                     //collect_username转换成realname
                     List<String> newusername = new ArrayList<String>();
@@ -742,17 +789,17 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                     business.setTodoUsers(JSON.toJSONString(newusername));
                     // 删除后重写
                     for (String oldUser : collect_username) {
-                        taskService.deleteCandidateUser(task2.getId(),oldUser);
+                        taskService.deleteCandidateUser(targetTask.getId(),oldUser);
                     }
                     if (CollUtil.isNotEmpty(beforeParamsCandidateUsernames)){
                         // 业务层有指定候选人，覆盖
                         for (String newUser : beforeParamsCandidateUsernames) {
-                            taskService.addCandidateUser(task2.getId(),newUser);
+                            taskService.addCandidateUser(targetTask.getId(),newUser);
                         }
                         business.setTodoUsers(JSON.toJSONString(beforeParamsCandidateUsernames));
                     } else {
                         for (String oldUser : collect_username) {
-                            taskService.addCandidateUser(task2.getId(),oldUser);
+                            taskService.addCandidateUser(targetTask.getId(),oldUser);
                         }
                     }
                 }
@@ -823,13 +870,13 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         }
 
 
-        // 获取所有正常进行的任务节点 Key，这些任务不能直接使用，需要找出其中需要撤回的任务
+        // 获取所有正常进行的任务节点 Key，这些任务不能直接使用，需要找出其中需要退回的任务
         List<Task> runTaskList = taskService.createTaskQuery().processInstanceId(task.getProcessInstanceId()).list();
         List<String> runTaskKeyList = new ArrayList<>();
         runTaskList.forEach(item -> runTaskKeyList.add(item.getTaskDefinitionKey()));
         // 需退回任务列表
         List<String> currentIds = new ArrayList<>();
-        // 通过父级网关的出口连线，结合 runTaskList 比对，获取需要撤回的任务
+        // 通过父级网关的出口连线，结合 runTaskList 比对，获取需要退回的任务
         List<UserTask> currentUserTaskList = FlowableUtils.iteratorFindChildUserTasks(target, runTaskKeyList, null, null);
         currentUserTaskList.forEach(item -> {
             currentIds.add(item.getId());
@@ -845,6 +892,61 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         // 设置回退意见
         for (String currentTaskId : currentTaskIds) {
             taskService.addComment(currentTaskId, task.getProcessInstanceId(), FlowComment.REBACK.getType(), flowTaskVo.getComment());
+        }
+        SysUser loginUser = iFlowThirdService.getLoginUser();
+        try {
+            // 设置处理人
+            taskService.setAssignee(task.getId(), loginUser.getUsername());
+            // 1 对 1 或 多 对 1 情况，currentIds 当前要跳转的节点列表(1或多)，targetKey 跳转到的节点(1)
+            runtimeService.createChangeActivityStateBuilder()
+                    .processInstanceId(task.getProcessInstanceId())
+                    .moveActivityIdsToSingleActivityId(currentIds, flowTaskVo.getTargetKey()).changeState();
+          //**跳转到目标节点
+            Task targetTask = taskService.createTaskQuery().processInstanceId(flowTaskVo.getInstanceId()).active().singleResult();
+         // 流程发起人
+            ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(targetTask.getProcessInstanceId()).singleResult();
+            String startUserId = processInstance.getStartUserId();
+            FlowElement targetElement = null;
+            if (allElements != null) {
+                for (FlowElement flowElement : allElements) {
+                    // 类型为用户节点
+                    if (flowElement.getId().equals(targetTask.getTaskDefinitionKey())) {
+                        // 获取节点信息
+                        targetElement = flowElement;
+                    }
+                }
+            }
+            if (targetElement!=null){
+                UserTask targetUserTask = (UserTask) targetElement;
+                
+                if (StrUtil.equals(targetUserTask.getIncomingFlows().get(0).getSourceRef(),"startNode1")) {//是否为发起人节点
+                    //开始节点 设置处理人为申请人
+                    taskService.setAssignee(targetTask.getId(), startUserId);
+                } else {
+                    List<SysUser> sysUserFromTask = getSysUserFromTask(targetUserTask);
+                    List<String> collect_username = sysUserFromTask.stream().map(SysUser::getUsername).collect(Collectors.toList());
+                    //collect_username转换成realname
+                    List<String> newusername = new ArrayList<String>();
+                    for (String oldUser : collect_username) {
+                    	SysUser sysUser = iFlowThirdService.getUserByUsername(oldUser);
+                        newusername.add(sysUser.getRealname());
+                    }
+             
+                    // 删除后重写
+                    for (String oldUser : collect_username) {
+                        taskService.deleteCandidateUser(targetTask.getId(),oldUser);
+                    }
+                  
+                    for (String oldUser : collect_username) {
+                        taskService.addCandidateUser(targetTask.getId(),oldUser);
+                    }
+                }
+            }
+            
+        } catch (FlowableObjectNotFoundException e) {
+            throw new CustomException("未找到流程实例，流程可能已发生变化");
+        } catch (FlowableException e) {
+            throw new CustomException("无法取消或开始活动");
         }
         
     }
@@ -946,7 +1048,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             if (!doneUserList.contains(loginUser.getUsername())){
                 doneUserList.add(loginUser.getUsername());
             }
-                //**跳转到目标节点
+            //**跳转到目标节点
             Task targetTask = taskService.createTaskQuery().processInstanceId(business.getProcessInstanceId()).active().singleResult();
                 business.setActStatus(ActStatus.reject)
                         .setTaskId(targetTask.getId())
@@ -956,14 +1058,14 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                         .setDoneUsers(doneUserList.toJSONString())
                 ;
             if (target!=null){
-                UserTask target2 = (UserTask) target;
-                business.setPriority(target2.getPriority());
-                if (StrUtil.equals(business.getTaskNameId(),ProcessConstants.START_NODE)){
+                UserTask targetUserTask = (UserTask) target;
+                business.setPriority(targetUserTask.getPriority());
+                if (StrUtil.equals(targetUserTask.getIncomingFlows().get(0).getSourceRef(),"startNode1")) {//是否为发起人节点
                 //    开始节点。设置处理人为申请人
                     business.setTodoUsers(JSON.toJSONString(Lists.newArrayList(business.getProposer())));
                     taskService.setAssignee(business.getTaskId(),business.getProposer());
                 } else {
-                    List<SysUser> sysUserFromTask = getSysUserFromTask(target2);
+                    List<SysUser> sysUserFromTask = getSysUserFromTask(targetUserTask);
                     List<String> collect_username = sysUserFromTask.stream().map(SysUser::getUsername).collect(Collectors.toList());
                   //collect_username转换成realname
                     List<String> newusername = new ArrayList<String>();

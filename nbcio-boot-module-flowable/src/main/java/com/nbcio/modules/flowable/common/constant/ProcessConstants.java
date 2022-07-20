@@ -7,9 +7,10 @@ package com.nbcio.modules.flowable.common.constant;
 public class ProcessConstants {
 
     /**
-     * 约定的开始节点标记名
+     * 约定的开始节点标记名  可以去掉不需要了
      */
     public static final String START_NODE = "start";
+
     /**
      * 动态数据
      */

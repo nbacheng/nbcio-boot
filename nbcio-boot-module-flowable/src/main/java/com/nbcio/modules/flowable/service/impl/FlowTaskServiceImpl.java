@@ -508,20 +508,20 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         // 目的获取所有需要被跳转的节点 currentIds
         // 取其中一个父级任务，因为后续要么存在公共网关，要么就是串行公共线路
         UserTask oneUserTask = parentUserTaskList.get(0);
-        // 获取所有正常进行的任务节点 Key，这些任务不能直接使用，需要找出其中需要撤回的任务
+        // 获取所有正常进行的任务节点 Key，这些任务不能直接使用，需要找出其中需要驳回的任务
         List<Task> runTaskList = taskService.createTaskQuery().processInstanceId(task.getProcessInstanceId()).list();
         List<String> runTaskKeyList = new ArrayList<>();
         runTaskList.forEach(item -> runTaskKeyList.add(item.getTaskDefinitionKey()));
         // 需驳回任务列表
         List<String> currentIds = new ArrayList<>();
-        // 通过父级网关的出口连线，结合 runTaskList 比对，获取需要撤回的任务
+        // 通过父级网关的出口连线，结合 runTaskList 比对，获取需要驳回的任务
         List<UserTask> currentUserTaskList = FlowableUtils.iteratorFindChildUserTasks(oneUserTask, runTaskKeyList, null, null);
         currentUserTaskList.forEach(item -> currentIds.add(item.getId()));
 
 
         // 规定：并行网关之前节点必须需存在唯一用户任务节点，如果出现多个任务节点，则并行网关节点默认为结束节点，原因为不考虑多对多情况
         if (targetIds.size() > 1 && currentIds.size() > 1) {
-            throw new CustomException("任务出现多对多情况，无法撤回");
+            throw new CustomException("任务出现多对多情况，无法驳回");
         }
 
         // 循环获取那些需要被撤回的节点的ID，用来设置驳回原因
@@ -1652,19 +1652,33 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     }
 
     /**
-     * 撤回流程  todo 目前存在错误
+     * 撤回流程 nbacheng 2022-07-22修正
      *
      * @param flowTaskVo
      * @return
      */
     @Override
     public Result revokeProcess(FlowTaskVo flowTaskVo) {
-        Task task = taskService.createTaskQuery().processInstanceId(flowTaskVo.getInstanceId()).singleResult();
+    	
+    	if(StrUtil.isNotBlank(flowTaskVo.getDataId())){
+   		 FlowMyBusiness business = flowMyBusinessService.getByDataId(flowTaskVo.getDataId());
+            flowTaskVo.setTaskId(business.getTaskId());
+            this.revokeProcessForDataId(flowTaskVo);
+            return Result.OK("撤回流程成功");
+   	    }
+    	// 当前任务 task
+    	Task task = taskService.createTaskQuery().processInstanceId(flowTaskVo.getInstanceId()).active().singleResult();
         if (task == null) {
             throw new CustomException("流程未启动或已执行完成，无法撤回");
         }
-
-        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+    	
+    	if (taskService.createTaskQuery().taskId(task.getId()).singleResult().isSuspended()) {
+            throw new CustomException("任务处于挂起状态");
+        }
+    	
+        
+        SysUser loginUser = iFlowThirdService.getLoginUser();
+        
         List<HistoricTaskInstance> htiList = historyService.createHistoricTaskInstanceQuery()
                 .processInstanceId(task.getProcessInstanceId())
                 .orderByTaskCreateTime()
@@ -1682,33 +1696,408 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         if (null == myTaskId) {
             throw new CustomException("该任务非当前用户提交，无法撤回");
         }
+        
+        // 获取流程定义信息
+        ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionId(task.getProcessDefinitionId()).singleResult();
+        // 获取所有节点信息
+        Process process = repositoryService.getBpmnModel(processDefinition.getId()).getProcesses().get(0);
+        // 获取全部节点列表，包含子节点
+        Collection<FlowElement> allElements = FlowableUtils.getAllElements(process.getFlowElements(), null);
+        // 获取当前任务节点元素
+        FlowElement source = null;
+        if (allElements != null) {
+            for (FlowElement flowElement : allElements) {
+                // 类型为用户节点
+                if (flowElement.getId().equals(task.getTaskDefinitionKey())) {
+                    // 获取节点信息
+                    source = flowElement;
+                }
+            }
+        }
 
-        String processDefinitionId = myTask.getProcessDefinitionId();
-        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
+        // 目的获取所有跳转到的节点 targetIds
+        // 获取当前节点的所有父级用户任务节点
+        // 深度优先算法思想：延边迭代深入
+        List<UserTask> parentUserTaskList = FlowableUtils.iteratorFindParentUserTasks(source, null, null);
+        if (parentUserTaskList == null || parentUserTaskList.size() == 0) {
+            throw new CustomException("当前节点为初始任务节点，不能撤回");
+        }
+        // 获取活动 ID 即节点 Key
+        List<String> parentUserTaskKeyList = new ArrayList<>();
+        parentUserTaskList.forEach(item -> parentUserTaskKeyList.add(item.getId()));
+        // 获取全部历史节点活动实例，即已经走过的节点历史，数据采用开始时间升序
+        List<HistoricTaskInstance> historicTaskInstanceList = historyService.createHistoricTaskInstanceQuery().processInstanceId(task.getProcessInstanceId()).orderByHistoricTaskInstanceStartTime().asc().list();
+        // 数据清洗，将回滚导致的脏数据清洗掉
+        List<String> lastHistoricTaskInstanceList = FlowableUtils.historicTaskInstanceClean(allElements, historicTaskInstanceList);
+        // 此时历史任务实例为倒序，获取最后走的节点
+        List<String> targetIds = new ArrayList<>();
+        // 循环结束标识，遇到当前目标节点的次数
+        int number = 0;
+        StringBuilder parentHistoricTaskKey = new StringBuilder();
+        for (String historicTaskInstanceKey : lastHistoricTaskInstanceList) {
+            // 当会签时候会出现特殊的，连续都是同一个节点历史数据的情况，这种时候跳过
+            if (parentHistoricTaskKey.toString().equals(historicTaskInstanceKey)) {
+                continue;
+            }
+            parentHistoricTaskKey = new StringBuilder(historicTaskInstanceKey);
+            if (historicTaskInstanceKey.equals(task.getTaskDefinitionKey())) {
+                number++;
+            }
+            // 在数据清洗后，历史节点就是唯一一条从起始到当前节点的历史记录，理论上每个点只会出现一次
+            // 在流程中如果出现循环，那么每次循环中间的点也只会出现一次，再出现就是下次循环
+            // number == 1，第一次遇到当前节点
+            // number == 2，第二次遇到，代表最后一次的循环范围
+            if (number == 2) {
+                break;
+            }
+            // 如果当前历史节点，属于父级的节点，说明最后一次经过了这个点，需要撤回这个点
+            if (parentUserTaskKeyList.contains(historicTaskInstanceKey)) {
+                targetIds.add(historicTaskInstanceKey);
+            }
+        }
 
-        //变量
-//      Map<String, VariableInstance> variables = runtimeService.getVariableInstances(currentTask.getExecutionId());
-        String myActivityId = null;
-        List<HistoricActivityInstance> haiList = historyService.createHistoricActivityInstanceQuery()
-                .executionId(myTask.getExecutionId()).finished().list();
-        for (HistoricActivityInstance hai : haiList) {
-            if (myTaskId.equals(hai.getTaskId())) {
-                myActivityId = hai.getActivityId();
+
+        // 目的获取所有需要被跳转的节点 currentIds
+        // 取其中一个父级任务，因为后续要么存在公共网关，要么就是串行公共线路
+        UserTask oneUserTask = parentUserTaskList.get(0);
+        // 获取所有正常进行的任务节点 Key，这些任务不能直接使用，需要找出其中需要撤回的任务
+        List<Task> runTaskList = taskService.createTaskQuery().processInstanceId(task.getProcessInstanceId()).list();
+        List<String> runTaskKeyList = new ArrayList<>();
+        runTaskList.forEach(item -> runTaskKeyList.add(item.getTaskDefinitionKey()));
+        // 需撤回任务列表
+        List<String> currentIds = new ArrayList<>();
+        // 通过父级网关的出口连线，结合 runTaskList 比对，获取需要撤回的任务
+        List<UserTask> currentUserTaskList = FlowableUtils.iteratorFindChildUserTasks(oneUserTask, runTaskKeyList, null, null);
+        currentUserTaskList.forEach(item -> currentIds.add(item.getId()));
+
+
+        // 规定：并行网关之前节点必须需存在唯一用户任务节点，如果出现多个任务节点，则并行网关节点默认为结束节点，原因为不考虑多对多情况
+        if (targetIds.size() > 1 && currentIds.size() > 1) {
+            throw new CustomException("任务出现多对多情况，无法撤回");
+        }
+
+        // 循环获取那些需要被撤回的节点的ID，用来设置撤回原因
+        List<String> currentTaskIds = new ArrayList<>();
+        currentIds.forEach(currentId -> runTaskList.forEach(runTask -> {
+            if (currentId.equals(runTask.getTaskDefinitionKey())) {
+                currentTaskIds.add(runTask.getId());
+            }
+        }));
+        // 设置撤回意见
+        currentTaskIds.forEach(item -> taskService.addComment(item, task.getProcessInstanceId(), FlowComment.RECALL.getType(), loginUser.getRealname().toString()  + "撤回"));
+             
+        try {
+            // 设置处理人
+            taskService.setAssignee(task.getId(), loginUser.getUsername());
+            // 如果父级任务多于 1 个，说明当前节点不是并行节点，原因为不考虑多对多情况
+            if (targetIds.size() > 1) {
+                // 1 对 多任务跳转，currentIds 当前节点(1)，targetIds 跳转到的节点(多)
+                runtimeService.createChangeActivityStateBuilder()
+                        .processInstanceId(task.getProcessInstanceId()).
+                        moveSingleActivityIdToActivityIds(currentIds.get(0), targetIds).changeState();
+            }
+            // 如果父级任务只有一个，因此当前任务可能为网关中的任务
+            if (targetIds.size() == 1) {
+                // 1 对 1 或 多 对 1 情况，currentIds 当前要跳转的节点列表(1或多)，targetIds.get(0) 跳转到的节点(1)
+                runtimeService.createChangeActivityStateBuilder()
+                        .processInstanceId(task.getProcessInstanceId())
+                        .moveActivityIdsToSingleActivityId(currentIds, targetIds.get(0)).changeState();
+            }
+            
+            // 撤回到了上一个节点等待处理
+            Task targetTask = taskService.createTaskQuery().processInstanceId(flowTaskVo.getInstanceId()).active().singleResult();
+            FlowElement targetElement = null;
+            if (allElements != null) {
+                for (FlowElement flowElement : allElements) {
+                    // 类型为用户节点
+                    if (flowElement.getId().equals(targetTask.getTaskDefinitionKey())) {
+                        // 获取节点信息
+                        targetElement = flowElement;
+                    }
+                }
+            }
+
+         // 流程发起人
+            ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(targetTask.getProcessInstanceId()).singleResult();
+            String startUserId = processInstance.getStartUserId();
+            
+            if (targetElement!=null){
+                UserTask targetUserTask = (UserTask) targetElement;
+                
+                if (StrUtil.equals(targetUserTask.getIncomingFlows().get(0).getSourceRef(),"startNode1")) {//是否为发起人节点
+                    //开始节点 设置处理人为申请人
+                    taskService.setAssignee(targetTask.getId(), startUserId);
+                } else {
+                    List<SysUser> sysUserFromTask = getSysUserFromTask(targetUserTask);
+                    List<String> collect_username = sysUserFromTask.stream().map(SysUser::getUsername).collect(Collectors.toList());
+                    //collect_username转换成realname
+                    List<String> newusername = new ArrayList<String>();
+                    for (String oldUser : collect_username) {
+                    	SysUser sysUser = iFlowThirdService.getUserByUsername(oldUser);
+                        newusername.add(sysUser.getRealname());
+                    }
+             
+                    // 删除后重写
+                    for (String oldUser : collect_username) {
+                        taskService.deleteCandidateUser(targetTask.getId(),oldUser);
+                    }
+                  
+                    for (String oldUser : collect_username) {
+                        taskService.addCandidateUser(targetTask.getId(),oldUser);
+                    }
+                }
+            }
+            
+        } catch (FlowableObjectNotFoundException e) {
+            throw new CustomException("未找到流程实例，流程可能已发生变化");
+        } catch (FlowableException e) {
+            throw new CustomException("无法取消或开始活动");
+        }
+        return Result.OK("撤回流程成功");
+    }
+    
+    
+    /**
+     * 撤回流程 nbacheng 2022-07-22修正
+     *
+     * @param flowTaskVo
+     * @return
+     */
+    @Override
+    public Result revokeProcessForDataId(FlowTaskVo flowTaskVo) {
+    	
+    	// 当前任务 task
+    	Task task = taskService.createTaskQuery().processInstanceId(flowTaskVo.getInstanceId()).active().singleResult();
+        if (task == null) {
+            throw new CustomException("流程未启动或已执行完成，无法撤回");
+        }
+    	
+    	if (taskService.createTaskQuery().taskId(task.getId()).singleResult().isSuspended()) {
+            throw new CustomException("任务处于挂起状态");
+        }
+    	
+        
+        SysUser loginUser = iFlowThirdService.getLoginUser();
+        
+        List<HistoricTaskInstance> htiList = historyService.createHistoricTaskInstanceQuery()
+                .processInstanceId(task.getProcessInstanceId())
+                .orderByTaskCreateTime()
+                .asc()
+                .list();
+        String myTaskId = null;
+        HistoricTaskInstance myTask = null;
+        for (HistoricTaskInstance hti : htiList) {
+            if (loginUser.getUsername().toString().equals(hti.getAssignee())) {
+                myTaskId = hti.getId();
+                myTask = hti;
                 break;
             }
         }
-        FlowNode myFlowNode = (FlowNode) bpmnModel.getMainProcess().getFlowElement(myActivityId);
+        if (null == myTaskId) {
+            throw new CustomException("该任务非当前用户提交，无法撤回");
+        }
+        
+        // 获取流程定义信息
+        ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionId(task.getProcessDefinitionId()).singleResult();
+        // 获取所有节点信息
+        Process process = repositoryService.getBpmnModel(processDefinition.getId()).getProcesses().get(0);
+        // 获取全部节点列表，包含子节点
+        Collection<FlowElement> allElements = FlowableUtils.getAllElements(process.getFlowElements(), null);
+        // 获取当前任务节点元素
+        FlowElement source = null;
+        if (allElements != null) {
+            for (FlowElement flowElement : allElements) {
+                // 类型为用户节点
+                if (flowElement.getId().equals(task.getTaskDefinitionKey())) {
+                    // 获取节点信息
+                    source = flowElement;
+                }
+            }
+        }
 
-        Execution execution = runtimeService.createExecutionQuery().executionId(task.getExecutionId()).singleResult();
-        String activityId = execution.getActivityId();
-        FlowNode flowNode = (FlowNode) bpmnModel.getMainProcess().getFlowElement(activityId);
+        // 目的获取所有跳转到的节点 targetIds
+        // 获取当前节点的所有父级用户任务节点
+        // 深度优先算法思想：延边迭代深入
+        List<UserTask> parentUserTaskList = FlowableUtils.iteratorFindParentUserTasks(source, null, null);
+        if (parentUserTaskList == null || parentUserTaskList.size() == 0) {
+            throw new CustomException("当前节点为初始任务节点，不能撤回");
+        }
+        // 获取活动 ID 即节点 Key
+        List<String> parentUserTaskKeyList = new ArrayList<>();
+        parentUserTaskList.forEach(item -> parentUserTaskKeyList.add(item.getId()));
+        // 获取全部历史节点活动实例，即已经走过的节点历史，数据采用开始时间升序
+        List<HistoricTaskInstance> historicTaskInstanceList = historyService.createHistoricTaskInstanceQuery().processInstanceId(task.getProcessInstanceId()).orderByHistoricTaskInstanceStartTime().asc().list();
+        // 数据清洗，将回滚导致的脏数据清洗掉
+        List<String> lastHistoricTaskInstanceList = FlowableUtils.historicTaskInstanceClean(allElements, historicTaskInstanceList);
+        // 此时历史任务实例为倒序，获取最后走的节点
+        List<String> targetIds = new ArrayList<>();
+        // 循环结束标识，遇到当前目标节点的次数
+        int number = 0;
+        StringBuilder parentHistoricTaskKey = new StringBuilder();
+        for (String historicTaskInstanceKey : lastHistoricTaskInstanceList) {
+            // 当会签时候会出现特殊的，连续都是同一个节点历史数据的情况，这种时候跳过
+            if (parentHistoricTaskKey.toString().equals(historicTaskInstanceKey)) {
+                continue;
+            }
+            parentHistoricTaskKey = new StringBuilder(historicTaskInstanceKey);
+            if (historicTaskInstanceKey.equals(task.getTaskDefinitionKey())) {
+                number++;
+            }
+            // 在数据清洗后，历史节点就是唯一一条从起始到当前节点的历史记录，理论上每个点只会出现一次
+            // 在流程中如果出现循环，那么每次循环中间的点也只会出现一次，再出现就是下次循环
+            // number == 1，第一次遇到当前节点
+            // number == 2，第二次遇到，代表最后一次的循环范围
+            if (number == 2) {
+                break;
+            }
+            // 如果当前历史节点，属于父级的节点，说明最后一次经过了这个点，需要撤回这个点
+            if (parentUserTaskKeyList.contains(historicTaskInstanceKey)) {
+                targetIds.add(historicTaskInstanceKey);
+            }
+        }
 
-        //记录原活动方向
-        List<SequenceFlow> oriSequenceFlows = new ArrayList<>(flowNode.getOutgoingFlows());
+
+        // 目的获取所有需要被跳转的节点 currentIds
+        // 取其中一个父级任务，因为后续要么存在公共网关，要么就是串行公共线路
+        UserTask oneUserTask = parentUserTaskList.get(0);
+        // 获取所有正常进行的任务节点 Key，这些任务不能直接使用，需要找出其中需要撤回的任务
+        List<Task> runTaskList = taskService.createTaskQuery().processInstanceId(task.getProcessInstanceId()).list();
+        List<String> runTaskKeyList = new ArrayList<>();
+        runTaskList.forEach(item -> runTaskKeyList.add(item.getTaskDefinitionKey()));
+        // 需撤回任务列表
+        List<String> currentIds = new ArrayList<>();
+        // 通过父级网关的出口连线，结合 runTaskList 比对，获取需要撤回的任务
+        List<UserTask> currentUserTaskList = FlowableUtils.iteratorFindChildUserTasks(oneUserTask, runTaskKeyList, null, null);
+        currentUserTaskList.forEach(item -> currentIds.add(item.getId()));
 
 
+        // 规定：并行网关之前节点必须需存在唯一用户任务节点，如果出现多个任务节点，则并行网关节点默认为结束节点，原因为不考虑多对多情况
+        if (targetIds.size() > 1 && currentIds.size() > 1) {
+            throw new CustomException("任务出现多对多情况，无法撤回");
+        }
+
+        // 循环获取那些需要被撤回的节点的ID，用来设置撤回原因
+        List<String> currentTaskIds = new ArrayList<>();
+        currentIds.forEach(currentId -> runTaskList.forEach(runTask -> {
+            if (currentId.equals(runTask.getTaskDefinitionKey())) {
+                currentTaskIds.add(runTask.getId());
+            }
+        }));
+        // 设置撤回意见
+        currentTaskIds.forEach(item -> taskService.addComment(item, task.getProcessInstanceId(), FlowComment.RECALL.getType(), loginUser.getRealname().toString()  + "撤回"));
+             
+        try {
+            // 设置处理人
+            taskService.setAssignee(task.getId(), loginUser.getUsername());
+            // 如果父级任务多于 1 个，说明当前节点不是并行节点，原因为不考虑多对多情况
+            if (targetIds.size() > 1) {
+                // 1 对 多任务跳转，currentIds 当前节点(1)，targetIds 跳转到的节点(多)
+                runtimeService.createChangeActivityStateBuilder()
+                        .processInstanceId(task.getProcessInstanceId()).
+                        moveSingleActivityIdToActivityIds(currentIds.get(0), targetIds).changeState();
+            }
+            // 如果父级任务只有一个，因此当前任务可能为网关中的任务
+            if (targetIds.size() == 1) {
+                // 1 对 1 或 多 对 1 情况，currentIds 当前要跳转的节点列表(1或多)，targetIds.get(0) 跳转到的节点(1)
+                runtimeService.createChangeActivityStateBuilder()
+                        .processInstanceId(task.getProcessInstanceId())
+                        .moveActivityIdsToSingleActivityId(currentIds, targetIds.get(0)).changeState();
+            }
+            
+          //业务数据id
+            String dataId = flowTaskVo.getDataId();
+            if (dataId==null) return null;
+            //如果保存数据前未调用必调的FlowCommonService.initActBusiness方法，就会有问题
+            FlowMyBusiness business = flowMyBusinessService.getByDataId(dataId);
+            
+            // 撤回到了上一个节点等待处理
+            Task targetTask = taskService.createTaskQuery().processInstanceId(flowTaskVo.getInstanceId()).active().singleResult();
+            //spring容器类名
+            String serviceImplName = business.getServiceImplName();
+            FlowCallBackServiceI flowCallBackService = (FlowCallBackServiceI) SpringContextUtils.getBean(serviceImplName);
+            Map<String, Object> values = flowTaskVo.getValues();
+            if (values ==null){
+                values = MapUtil.newHashMap();
+                values.put("dataId",dataId);
+            } else {
+                values.put("dataId",dataId);
+            }
+            List<String> beforeParamsCandidateUsernames = flowCallBackService.flowCandidateUsernamesOfTask(targetTask.getTaskDefinitionKey(), values);
+            //设置数据
+            String doneUsers = business.getDoneUsers();
+            // 处理过流程的人
+            JSONArray doneUserList = new JSONArray();
+            if (StrUtil.isNotBlank(doneUsers)){
+                doneUserList = JSON.parseArray(doneUsers);
+            }
+            if (!doneUserList.contains(loginUser.getUsername())){
+                doneUserList.add(loginUser.getUsername());
+            }
+            business.setActStatus(ActStatus.recall)
+                    .setTaskId(targetTask.getId())
+                    .setTaskNameId(targetTask.getTaskDefinitionKey())
+                    .setTaskName(targetTask.getName())
+                    .setDoneUsers(doneUserList.toJSONString())
+            ;
+            FlowElement targetElement = null;
+            if (allElements != null) {
+                for (FlowElement flowElement : allElements) {
+                    // 类型为用户节点
+                    if (flowElement.getId().equals(targetTask.getTaskDefinitionKey())) {
+                        // 获取节点信息
+                        targetElement = flowElement;
+                    } 
+                }
+            }
+
+            if (targetElement!=null){
+                UserTask targetUserTask = (UserTask) targetElement;
+                business.setPriority(targetUserTask.getPriority());
+
+                if (StrUtil.equals(targetUserTask.getIncomingFlows().get(0).getSourceRef(),"startNode1")) {//是否为发起人节点
+                    //    开始节点。设置处理人为申请人
+                    business.setTodoUsers(JSON.toJSONString(Lists.newArrayList(business.getProposer())));
+                    taskService.setAssignee(business.getTaskId(),business.getProposer());
+                } else {
+                    List<SysUser> sysUserFromTask = getSysUserFromTask(targetUserTask);
+                    List<String> collect_username = sysUserFromTask.stream().map(SysUser::getUsername).collect(Collectors.toList());
+                    //collect_username转换成realname
+                    List<String> newusername = new ArrayList<String>();
+                    for (String oldUser : collect_username) {
+                    	SysUser sysUser = iFlowThirdService.getUserByUsername(oldUser);
+                        newusername.add(sysUser.getRealname());
+                    }
+                    business.setTodoUsers(JSON.toJSONString(newusername));
+                    // 删除后重写
+                    for (String oldUser : collect_username) {
+                        taskService.deleteCandidateUser(targetTask.getId(),oldUser);
+                    }
+                    if (CollUtil.isNotEmpty(beforeParamsCandidateUsernames)){
+                        // 业务层有指定候选人，覆盖
+                        for (String newUser : beforeParamsCandidateUsernames) {
+                            taskService.addCandidateUser(targetTask.getId(),newUser);
+                        }
+                        business.setTodoUsers(JSON.toJSONString(beforeParamsCandidateUsernames));
+                    } else {
+                        for (String oldUser : collect_username) {
+                            taskService.addCandidateUser(targetTask.getId(),oldUser);
+                        }
+                    }
+                }
+            }
+
+            flowMyBusinessService.updateById(business);
+           // 流程处理完后，进行回调业务层
+            business.setValues(values);
+            if (flowCallBackService!=null) flowCallBackService.afterFlowHandle(business);
+        } catch (FlowableObjectNotFoundException e) {
+            throw new CustomException("未找到流程实例，流程可能已发生变化");
+        } catch (FlowableException e) {
+            throw new CustomException("无法取消或开始活动");
+        }
         return Result.OK("撤回流程成功");
     }
+
 
     /**
      * 代办任务列表

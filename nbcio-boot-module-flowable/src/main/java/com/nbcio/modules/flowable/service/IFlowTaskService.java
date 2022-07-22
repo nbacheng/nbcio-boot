@@ -136,6 +136,8 @@ public interface IFlowTaskService {
      * @return
      */
     Result revokeProcess(FlowTaskVo flowTaskVo);
+    
+    Result revokeProcessForDataId(FlowTaskVo flowTaskVo);
 
 
     /**

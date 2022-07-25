@@ -95,10 +95,10 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
 
     @Resource
     private IFlowThirdService iFlowThirdService;
-    
+
     @Autowired
     private ISysDeployFormService sysInstanceFormService;
-    
+
     @Autowired
     FlowMyBusinessServiceImpl flowMyBusinessService;
     /**
@@ -109,7 +109,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Result complete(FlowTaskVo taskVo) {
-    	
+
     	//如果保存数据前未调用必调的FlowCommonService.initActBusiness方法，就会有问题
     	if(StrUtil.isNotBlank(taskVo.getDataId())){
     		FlowMyBusiness business = flowMyBusinessService.getByDataId(taskVo.getDataId());
@@ -125,17 +125,17 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         }
         SysUser loginUser = iFlowThirdService.getLoginUser();
         FlowCommentFileDto commentfiles = taskVo.getCommentFileDto();
-        
+
         if (DelegationState.PENDING.equals(task.getDelegationState())) {
             taskService.addComment(taskVo.getTaskId(), taskVo.getInstanceId(), FlowComment.DELEGATE.getType(), taskService.getVariable(taskVo.getTaskId(), "delegate").toString()+ taskVo.getComment());
             taskService.setVariable(taskVo.getTaskId(), "delegate", loginUser.getRealname() + FlowComment.DELEGATE.getRemark() + ":" +  taskVo.getComment());
             if(StringUtils.isNoneEmpty(commentfiles.getFileurl())) {
         		//以逗号分割的多个文件链接地址与文件名称
-        		
+
         		String attachmentDescription = getFileName(commentfiles);
-        		//这里文件类型先作为流程类型来处理，以便显示时候可以区分显示不同的附件	
+        		//这里文件类型先作为流程类型来处理，以便显示时候可以区分显示不同的附件
     			String fileType = FlowComment.DELEGATE.getType();
-				taskService.createAttachment(fileType, taskVo.getTaskId(), taskVo.getInstanceId(), attachmentDescription, attachmentDescription, commentfiles.getFileurl());  
+				taskService.createAttachment(fileType, taskVo.getTaskId(), taskVo.getInstanceId(), attachmentDescription, attachmentDescription, commentfiles.getFileurl());
         	}
             //生成子流程历史记录，目前显示还有问题
             //TaskEntity subtask = createSubTask(taskEntity, taskEntity.getId(), loginUser.getUsername());
@@ -147,36 +147,36 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         		taskService.addComment(taskVo.getTaskId(), taskVo.getInstanceId(), FlowComment.NORMAL.getType(), loginUser.getRealname() + "意见:" + taskVo.getComment());
         		if(StringUtils.isNoneEmpty(commentfiles.getFileurl())) {
         			//以逗号分割的多个文件链接地址与文件名称
-            		
+
             		String attachmentDescription = getFileName(commentfiles);
-            		//这里文件类型先作为流程类型来处理，以便显示时候可以区分显示不同的附件	
+            		//这里文件类型先作为流程类型来处理，以便显示时候可以区分显示不同的附件
         			String fileType = FlowComment.NORMAL.getType();
-        			taskService.createAttachment(fileType, taskVo.getTaskId(), taskVo.getInstanceId(), attachmentDescription, attachmentDescription, commentfiles.getFileurl());  
+        			taskService.createAttachment(fileType, taskVo.getTaskId(), taskVo.getInstanceId(), attachmentDescription, attachmentDescription, commentfiles.getFileurl());
             	}
         	}
         	else if(Objects.nonNull(taskService.getVariable(taskVo.getTaskId(), "delegate"))) {//委派过来的流程任务
         		taskService.addComment(taskVo.getTaskId(), taskVo.getInstanceId(), FlowComment.NORMAL.getType(), loginUser.getRealname() + "意见:" + taskVo.getComment());
         		if(StringUtils.isNoneEmpty(commentfiles.getFileurl())) {
             		///以逗号分割的多个文件链接地址与文件名称
-            		
+
             		String attachmentDescription = getFileName(commentfiles);
-            		//这里文件类型先作为流程类型来处理，以便显示时候可以区分显示不同的附件	
+            		//这里文件类型先作为流程类型来处理，以便显示时候可以区分显示不同的附件
         			String fileType = FlowComment.NORMAL.getType();
-        			taskService.createAttachment(fileType, taskVo.getTaskId(), taskVo.getInstanceId(), attachmentDescription, attachmentDescription, commentfiles.getFileurl());  
+        			taskService.createAttachment(fileType, taskVo.getTaskId(), taskVo.getInstanceId(), attachmentDescription, attachmentDescription, commentfiles.getFileurl());
             	}
         	}
         	else {
         		 taskService.addComment(taskVo.getTaskId(), taskVo.getInstanceId(), FlowComment.NORMAL.getType(), taskVo.getComment());
         		 if(StringUtils.isNoneEmpty(commentfiles.getFileurl())) {
         			//以逗号分割的多个文件链接地址与文件名称
-             		
+
              		String attachmentDescription = getFileName(commentfiles);
-             		//这里文件类型先作为流程类型来处理，以便显示时候可以区分显示不同的附件	
+             		//这里文件类型先作为流程类型来处理，以便显示时候可以区分显示不同的附件
              		String fileType = FlowComment.NORMAL.getType();
-             		taskService.createAttachment(fileType, taskVo.getTaskId(), taskVo.getInstanceId(), attachmentDescription, attachmentDescription, commentfiles.getFileurl());  
+             		taskService.createAttachment(fileType, taskVo.getTaskId(), taskVo.getInstanceId(), attachmentDescription, attachmentDescription, commentfiles.getFileurl());
              	}
         	}
-           
+
             taskService.setAssignee(taskVo.getTaskId(), loginUser.getUsername());
             //complete方法来流传任务到下一个节点。其中第二个参数variables为下一个节点需要的参数Map,主要指流程设置的一些变量信息
             taskService.complete(taskVo.getTaskId(), taskVo.getValues());
@@ -185,12 +185,12 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
               if(taskVo.getValues().containsKey("approval")) {//前端传回的变量值
             	 taskService.setAssignee(tasknext.getId(), taskVo.getValues().get("approval").toString());
               }
-            }   
+            }
         }
-        
+
         return Result.OK("任务完成");
     }
-    
+
 
 	/**
      * 完成任务
@@ -206,14 +206,14 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         FlowCommentFileDto commentfiles = taskVo.getCommentFileDto();
         if (DelegationState.PENDING.equals(task.getDelegationState())) { //对于委派的处理
         	 taskService.addComment(taskVo.getTaskId(), taskVo.getInstanceId(), FlowComment.DELEGATE.getType(), taskService.getVariable(taskVo.getTaskId(), "delegate").toString()+ taskVo.getComment());
-             taskService.setVariable(taskVo.getTaskId(), "delegate", loginUser.getRealname() + FlowComment.DELEGATE.getRemark() + ":" +  taskVo.getComment());      	
+             taskService.setVariable(taskVo.getTaskId(), "delegate", loginUser.getRealname() + FlowComment.DELEGATE.getRemark() + ":" +  taskVo.getComment());
              if(StringUtils.isNoneEmpty(commentfiles.getFileurl())) {
             	//以逗号分割的多个文件链接地址与文件名称
-         		
+
          		String attachmentDescription = getFileName(commentfiles);
-         		//这里文件类型先作为流程类型来处理，以便显示时候可以区分显示不同的附件	
+         		//这里文件类型先作为流程类型来处理，以便显示时候可以区分显示不同的附件
      			String fileType = FlowComment.DELEGATE.getType();
- 				taskService.createAttachment(fileType, taskVo.getTaskId(), taskVo.getInstanceId(), attachmentDescription, attachmentDescription, commentfiles.getFileurl());  
+ 				taskService.createAttachment(fileType, taskVo.getTaskId(), taskVo.getInstanceId(), attachmentDescription, attachmentDescription, commentfiles.getFileurl());
          	}
              //taskService.resolveTask(taskVo.getTaskId(), taskVo.getValues());
             //对委派的自定义业务dataid进行处理
@@ -233,11 +233,11 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             //    业务层有设置变量，使用业务层的变量
                 values = flowBeforeParamsValues;
             }
-           
+
             // 被委派任务的办理: 办理完成后，委派任务会自动回到委派人的任务中
             //处理下个节点的候选人，对于委派来说，实际上就是当前节点，因为委派完成后相当于驳回到当前节点了
             taskService.resolveTask(taskVo.getTaskId(), values);
-                      
+
             String doneUsers = business.getDoneUsers();
             // 处理过流程的人
             JSONArray doneUserList = new JSONArray();
@@ -247,15 +247,15 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             if (!doneUserList.contains(loginUser.getUsername())){
                 doneUserList.add(loginUser.getUsername());
             }
-            
+
             Task task2 = taskService.createTaskQuery().processInstanceId(business.getProcessInstanceId()).active().singleResult();
-            
+
             SysUser sysUser = iFlowThirdService.getUserByUsername(task2.getAssignee());
             business.setActStatus(ActStatus.doing)
                     .setTaskId(task2.getId())
                     .setTaskNameId(task2.getId())
                     .setTaskName(task2.getName())
-                    .setPriority(Integer.toString(task2.getPriority()))       
+                    .setPriority(Integer.toString(task2.getPriority()))
                     .setDoneUsers(doneUserList.toString())
                     .setTodoUsers(sysUser.getRealname());
             flowMyBusinessService.updateById(business);
@@ -263,40 +263,40 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             business.setValues(values);
             if (flowCallBackService!=null)flowCallBackService.afterFlowHandle(business);
             return Result.OK("任务完成");
-            
+
         } else {//其它正常流程的处理
         	if(Objects.nonNull(taskService.getVariable(taskVo.getTaskId(), "assign"))) {//转办过来的流程任务
         		taskService.addComment(taskVo.getTaskId(), taskVo.getInstanceId(), FlowComment.ASSIGN.getType(), taskService.getVariable(taskVo.getTaskId(), "assign").toString()+ taskVo.getComment());
         		taskService.addComment(taskVo.getTaskId(), taskVo.getInstanceId(), FlowComment.NORMAL.getType(), loginUser.getRealname() + "意见:" + taskVo.getComment());
         		if(StringUtils.isNoneEmpty(commentfiles.getFileurl())) {
         			//以逗号分割的多个文件链接地址与文件名称
-            		
+
             		String attachmentDescription = getFileName(commentfiles);
-            		//这里文件类型先作为流程类型来处理，以便显示时候可以区分显示不同的附件	
+            		//这里文件类型先作为流程类型来处理，以便显示时候可以区分显示不同的附件
         			String fileType = FlowComment.NORMAL.getType();
-        			taskService.createAttachment(fileType, taskVo.getTaskId(), taskVo.getInstanceId(), attachmentDescription, attachmentDescription, commentfiles.getFileurl());  
+        			taskService.createAttachment(fileType, taskVo.getTaskId(), taskVo.getInstanceId(), attachmentDescription, attachmentDescription, commentfiles.getFileurl());
             	}
         	}
         	else if(Objects.nonNull(taskService.getVariable(taskVo.getTaskId(), "delegate"))) {//委派过来的流程任务
         		taskService.addComment(taskVo.getTaskId(), taskVo.getInstanceId(), FlowComment.NORMAL.getType(), loginUser.getRealname() + "意见:" + taskVo.getComment());
         		if(StringUtils.isNoneEmpty(commentfiles.getFileurl())) {
         			//以逗号分割的多个文件链接地址与文件名称
-            		
+
             		String attachmentDescription = getFileName(commentfiles);
-            		//这里文件类型先作为流程类型来处理，以便显示时候可以区分显示不同的附件	
+            		//这里文件类型先作为流程类型来处理，以便显示时候可以区分显示不同的附件
         			String fileType = FlowComment.NORMAL.getType();
-        			taskService.createAttachment(fileType, taskVo.getTaskId(), taskVo.getInstanceId(), attachmentDescription, attachmentDescription, commentfiles.getFileurl());  
+        			taskService.createAttachment(fileType, taskVo.getTaskId(), taskVo.getInstanceId(), attachmentDescription, attachmentDescription, commentfiles.getFileurl());
             	}
         	}
         	else {
         		 taskService.addComment(taskVo.getTaskId(), taskVo.getInstanceId(), FlowComment.NORMAL.getType(), taskVo.getComment());
         		 if(StringUtils.isNoneEmpty(commentfiles.getFileurl())) {
         			//以逗号分割的多个文件链接地址与文件名称
-             		
+
              		String attachmentDescription = getFileName(commentfiles);
-              		//这里文件类型先作为流程类型来处理，以便显示时候可以区分显示不同的附件	
+              		//这里文件类型先作为流程类型来处理，以便显示时候可以区分显示不同的附件
               		String fileType = FlowComment.NORMAL.getType();
-              		taskService.createAttachment(fileType, taskVo.getTaskId(), taskVo.getInstanceId(), attachmentDescription, attachmentDescription, commentfiles.getFileurl());  
+              		taskService.createAttachment(fileType, taskVo.getTaskId(), taskVo.getInstanceId(), attachmentDescription, attachmentDescription, commentfiles.getFileurl());
               	}
         	}
             //taskService.addComment(taskVo.getTaskId(), taskVo.getInstanceId(), FlowComment.NORMAL.getType(), taskVo.getComment());
@@ -320,17 +320,17 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         //    业务层有设置变量，使用业务层的变量
             values = flowBeforeParamsValues;
         }
-             
+
         FlowNextDto nextFlowNode = this.getNextFlowNode(task.getId(), values);
-        
+
         taskService.complete(taskVo.getTaskId(), values);
-        
+
         if(taskVo.getValues() !=null) {//对候选组人员选择的支持
             Task tasknext = taskService.createTaskQuery().processInstanceId(taskVo.getInstanceId()).active().singleResult();
             if(taskVo.getValues().containsKey("approval")) {//前端传回的变量值
           	 taskService.setAssignee(tasknext.getId(), taskVo.getValues().get("approval").toString());
             }
-        }   
+        }
         //下一个实例节点
         Task task2 = taskService.createTaskQuery().processInstanceId(business.getProcessInstanceId()).active().singleResult();
         // 下个节点候选人，目前没有实现这功能，返回null
@@ -338,7 +338,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         if(task2!=null){
             beforeParamsCandidateUsernames = flowCallBackService.flowCandidateUsernamesOfTask(task2.getTaskDefinitionKey(),taskVo.getValues());
         }
-        
+
         String doneUsers = business.getDoneUsers();
         // 处理过流程的人
         JSONArray doneUserList = new JSONArray();
@@ -406,7 +406,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         if (flowCallBackService!=null)flowCallBackService.afterFlowHandle(business);
         return Result.OK("任务完成");
     }
-   
+
     /**
      * 返回文件名
      *
@@ -414,7 +414,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      */
        String  getFileName(FlowCommentFileDto commentfiles) {
     	 //以逗号分割的多个文件链接地址与文件名称
-    	 String attachmentDescription = "";  
+    	 String attachmentDescription = "";
     	 if(commentfiles.getFileurl().contains(",")) {
     		 String[] strUrls = commentfiles.getFileurl().split(",");
  		     for(String url : strUrls){
@@ -439,7 +439,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
              this.taskRejectForDataId(flowTaskVo);
              return;
     	}
-    	
+
         if (taskService.createTaskQuery().taskId(flowTaskVo.getTaskId()).singleResult().isSuspended()) {
             throw new CustomException("任务处于挂起状态");
         }
@@ -533,7 +533,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         }));
         // 设置驳回意见
         currentTaskIds.forEach(item -> taskService.addComment(item, task.getProcessInstanceId(), FlowComment.REJECT.getType(), flowTaskVo.getComment()));
-        
+
         SysUser loginUser = iFlowThirdService.getLoginUser();
         try {
             // 设置处理人
@@ -552,7 +552,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                         .processInstanceId(task.getProcessInstanceId())
                         .moveActivityIdsToSingleActivityId(currentIds, targetIds.get(0)).changeState();
             }
-            
+
             // 驳回到了上一个节点等待处理
             Task targetTask = taskService.createTaskQuery().processInstanceId(flowTaskVo.getInstanceId()).active().singleResult();
             FlowElement targetElement = null;
@@ -569,10 +569,10 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
          // 流程发起人
             ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(targetTask.getProcessInstanceId()).singleResult();
             String startUserId = processInstance.getStartUserId();
-            
+
             if (targetElement!=null){
                 UserTask targetUserTask = (UserTask) targetElement;
-                
+
                 if (StrUtil.equals(targetUserTask.getIncomingFlows().get(0).getSourceRef(),"startNode1")) {//是否为发起人节点
                     //开始节点 设置处理人为申请人
                     taskService.setAssignee(targetTask.getId(), startUserId);
@@ -585,18 +585,18 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                     	SysUser sysUser = iFlowThirdService.getUserByUsername(oldUser);
                         newusername.add(sysUser.getRealname());
                     }
-             
+
                     // 删除后重写
                     for (String oldUser : collect_username) {
                         taskService.deleteCandidateUser(targetTask.getId(),oldUser);
                     }
-                  
+
                     for (String oldUser : collect_username) {
                         taskService.addCandidateUser(targetTask.getId(),oldUser);
                     }
                 }
             }
-            
+
         } catch (FlowableObjectNotFoundException e) {
             throw new CustomException("未找到流程实例，流程可能已发生变化");
         } catch (FlowableException e) {
@@ -604,7 +604,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         }
 
     }
-    
+
     /**
      * 驳回任务
      *
@@ -765,7 +765,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                     if (flowElement.getId().equals(targetTask.getTaskDefinitionKey())) {
                         // 获取节点信息
                         targetElement = flowElement;
-                    } 
+                    }
                 }
             }
 
@@ -816,7 +816,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         }
 
     }
-    
+
     /**
      * 退回任务
      *
@@ -918,7 +918,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             }
             if (targetElement!=null){
                 UserTask targetUserTask = (UserTask) targetElement;
-                
+
                 if (StrUtil.equals(targetUserTask.getIncomingFlows().get(0).getSourceRef(),"startNode1")) {//是否为发起人节点
                     //开始节点 设置处理人为申请人
                     taskService.setAssignee(targetTask.getId(), startUserId);
@@ -931,26 +931,26 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                     	SysUser sysUser = iFlowThirdService.getUserByUsername(oldUser);
                         newusername.add(sysUser.getRealname());
                     }
-             
+
                     // 删除后重写
                     for (String oldUser : collect_username) {
                         taskService.deleteCandidateUser(targetTask.getId(),oldUser);
                     }
-                  
+
                     for (String oldUser : collect_username) {
                         taskService.addCandidateUser(targetTask.getId(),oldUser);
                     }
                 }
             }
-            
+
         } catch (FlowableObjectNotFoundException e) {
             throw new CustomException("未找到流程实例，流程可能已发生变化");
         } catch (FlowableException e) {
             throw new CustomException("无法取消或开始活动");
         }
-        
+
     }
-    
+
     /**
      * 退回任务
      *
@@ -1118,7 +1118,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      */
     @Override
     public Result findReturnTaskList(FlowTaskVo flowTaskVo) {
-    	
+
     	if(StrUtil.isNotBlank(flowTaskVo.getDataId())){
     		FlowMyBusiness business = flowMyBusinessService.getByDataId(flowTaskVo.getDataId());
             flowTaskVo.setTaskId(business.getTaskId());
@@ -1203,11 +1203,11 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     	 if (taskService.createTaskQuery().taskId(flowTaskVo.getTaskId()).singleResult().isSuspended()) {
              throw new CustomException("任务处于挂起状态");
          }
-    	 
+
     	 SysUser targetUser = iFlowThirdService.getUserByUsername(flowTaskVo.getAssignee());
     	// 当前任务 task
          Task task = taskService.createTaskQuery().taskId(flowTaskVo.getTaskId()).singleResult();
-         
+
     	 SysUser loginUser = iFlowThirdService.getLoginUser();
     	 String delegatecomment;
     	 if(task.getAssignee() != null ) {
@@ -1218,10 +1218,10 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     	 else {
     		 delegatecomment = "经由"+ loginUser.getRealname() + "委派给" + targetUser.getRealname() + "意见:";
     	 }
-    	
+
     	 if(StrUtil.isNotBlank(flowTaskVo.getDataId())){
-    		
-    		
+
+
     		taskService.addComment(flowTaskVo.getTaskId(), flowTaskVo.getInstanceId(), FlowComment.DELEGATE.getType(), delegatecomment);
     		taskService.setVariable(flowTaskVo.getTaskId(), "delegate", delegatecomment);
     		taskService.delegateTask(flowTaskVo.getTaskId(), flowTaskVo.getAssignee());
@@ -1233,11 +1233,11 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             FlowMyBusiness business = flowMyBusinessService.getByDataId(dataId);
             //**获取当前节点
             Task currentTask = taskService.createTaskQuery().processInstanceId(business.getProcessInstanceId()).active().singleResult();
-            
+
             //spring容器类名
             String serviceImplName = business.getServiceImplName();
             FlowCallBackServiceI flowCallBackService = (FlowCallBackServiceI) SpringContextUtils.getBean(serviceImplName);
-            
+
             String doneUsers = business.getDoneUsers();
             // 处理过流程的人
             JSONArray doneUserList = new JSONArray();
@@ -1247,7 +1247,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             if (!doneUserList.contains(loginUser.getUsername())){
                 doneUserList.add(loginUser.getUsername());
             }
-            
+
             business.setActStatus(ActStatus.delegate)
                     .setTaskId(currentTask.getId())
                     .setTaskNameId(currentTask.getTaskDefinitionKey())
@@ -1266,10 +1266,10 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     		taskService.setVariable(flowTaskVo.getTaskId(), "delegate", delegatecomment);
     		taskService.delegateTask(flowTaskVo.getTaskId(), flowTaskVo.getAssignee());
     	}
-        
+
     }
 
-    
+
     /**
      * 创建子任务
      *
@@ -1323,9 +1323,9 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         else {
         	assigncomment =  "经由"+ loginUser.getRealname() + "转办给" + targetUser.getRealname() + "意见:";
         }
-       
+
     	if(StrUtil.isNotBlank(flowTaskVo.getDataId())){
-    		
+
     		taskService.addComment(flowTaskVo.getTaskId(), flowTaskVo.getInstanceId(), FlowComment.ASSIGN.getType(),assigncomment);
     		taskService.setVariable(flowTaskVo.getTaskId(), "assign", assigncomment);
     		taskService.setAssignee(flowTaskVo.getTaskId(),flowTaskVo.getAssignee());
@@ -1337,11 +1337,11 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             FlowMyBusiness business = flowMyBusinessService.getByDataId(dataId);
             //**获取当前节点
             Task currentTask = taskService.createTaskQuery().processInstanceId(business.getProcessInstanceId()).active().singleResult();
-            
+
             //spring容器类名
             String serviceImplName = business.getServiceImplName();
             FlowCallBackServiceI flowCallBackService = (FlowCallBackServiceI) SpringContextUtils.getBean(serviceImplName);
-            
+
             String doneUsers = business.getDoneUsers();
             // 处理过流程的人
             JSONArray doneUserList = new JSONArray();
@@ -1351,7 +1351,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             if (!doneUserList.contains(loginUser.getUsername())){
                 doneUserList.add(loginUser.getUsername());
             }
-       
+
             business.setActStatus(ActStatus.assign)
                     .setTaskId(currentTask.getId())
                     .setTaskNameId(currentTask.getTaskDefinitionKey())
@@ -1370,9 +1370,9 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
     		taskService.setVariable(flowTaskVo.getTaskId(), "assign", assigncomment);
     		taskService.setAssignee(flowTaskVo.getTaskId(),flowTaskVo.getAssignee());
     	}
-        
+
     }
-    
+
     /**
      * 所有流程任务
      *        by nbacheng
@@ -1380,7 +1380,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      * @param pageSize
      * @param flowTaskDto
      * @return
-     * @throws  
+     * @throws
      */
     @Override
     public Result allProcess(Integer pageNo, Integer pageSize, FlowTaskDto flowTaskDto)  {
@@ -1404,7 +1404,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             flowTask.setFinishTime(hisIns.getEndTime());
             flowTask.setProcInsId(hisIns.getId());
             flowTask.setBusinessKey(hisIns.getBusinessKey());
-            
+
             // 计算耗时
             if (Objects.nonNull(hisIns.getEndTime())) {
                 long time = hisIns.getEndTime().getTime() - hisIns.getStartTime().getTime();
@@ -1423,7 +1423,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             flowTask.setCategory(pd.getCategory());
 
             // 当前所处流程 todo: 本地启动放开以下注释
-            
+
             List<Task> taskList = taskService.createTaskQuery().processInstanceId(hisIns.getId()).list();
             if (CollectionUtils.isNotEmpty(taskList)) {
                 flowTask.setTaskId(taskList.get(0).getId());
@@ -1507,8 +1507,8 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             	if(map.containsKey("deptName")) flowTask.setDeptName(map.get("deptName").toString());
             	if(map.containsKey("deptName"))flowTask.setTaskName(map.get("taskName").toString());
             }
-           
-            
+
+
             flowList.add(flowTask);
         }
         page.setRecords(flowList);
@@ -1521,7 +1521,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      * @param pageNum
      * @param pageSize
      * @return
-     * @throws  
+     * @throws
      */
     @Override
     public Result myProcessNew(Integer pageNo, Integer pageSize, FlowTaskDto flowTaskDto)  {
@@ -1547,7 +1547,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             flowTask.setFinishTime(hisIns.getEndTime());
             flowTask.setProcInsId(hisIns.getId());
             flowTask.setBusinessKey(hisIns.getBusinessKey());
-            
+
             // 计算耗时
             if (Objects.nonNull(hisIns.getEndTime())) {
                 long time = hisIns.getEndTime().getTime() - hisIns.getStartTime().getTime();
@@ -1580,14 +1580,14 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             	if(map.containsKey("deptName")) flowTask.setDeptName(map.get("deptName").toString());
             	if(map.containsKey("deptName"))flowTask.setTaskName(map.get("taskName").toString());
             }
-           
-            
+
+
             flowList.add(flowTask);
         }
         page.setRecords(flowList);
         return Result.OK(page);
     }
-    
+
     /**
      * 流程历史当前审批节点信息
      * add by nbacheng
@@ -1609,11 +1609,11 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                   map.put("taskName", task.getName());
               }
             }
-            
+
         }
         return map;
     }
-    
+
     /**
      * 取消申请
      *
@@ -1659,7 +1659,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      */
     @Override
     public Result revokeProcess(FlowTaskVo flowTaskVo) {
-    	
+
     	if(StrUtil.isNotBlank(flowTaskVo.getDataId())){
    		 FlowMyBusiness business = flowMyBusinessService.getByDataId(flowTaskVo.getDataId());
             flowTaskVo.setTaskId(business.getTaskId());
@@ -1671,14 +1671,14 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         if (task == null) {
             throw new CustomException("流程未启动或已执行完成，无法撤回");
         }
-    	
+
     	if (taskService.createTaskQuery().taskId(task.getId()).singleResult().isSuspended()) {
             throw new CustomException("任务处于挂起状态");
         }
-    	
-        
+
+
         SysUser loginUser = iFlowThirdService.getLoginUser();
-        
+
         List<HistoricTaskInstance> htiList = historyService.createHistoricTaskInstanceQuery()
                 .processInstanceId(task.getProcessInstanceId())
                 .orderByTaskCreateTime()
@@ -1696,7 +1696,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         if (null == myTaskId) {
             throw new CustomException("该任务非当前用户提交，无法撤回");
         }
-        
+
         // 获取流程定义信息
         ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionId(task.getProcessDefinitionId()).singleResult();
         // 获取所有节点信息
@@ -1785,7 +1785,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         }));
         // 设置撤回意见
         currentTaskIds.forEach(item -> taskService.addComment(item, task.getProcessInstanceId(), FlowComment.RECALL.getType(), loginUser.getRealname().toString()  + "撤回"));
-             
+
         try {
             // 设置处理人
             taskService.setAssignee(task.getId(), loginUser.getUsername());
@@ -1803,7 +1803,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                         .processInstanceId(task.getProcessInstanceId())
                         .moveActivityIdsToSingleActivityId(currentIds, targetIds.get(0)).changeState();
             }
-            
+
             // 撤回到了上一个节点等待处理
             Task targetTask = taskService.createTaskQuery().processInstanceId(flowTaskVo.getInstanceId()).active().singleResult();
             FlowElement targetElement = null;
@@ -1820,18 +1820,18 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
          // 流程发起人
             ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(targetTask.getProcessInstanceId()).singleResult();
             String startUserId = processInstance.getStartUserId();
-            
+
             if (targetElement!=null){
                 UserTask targetUserTask = (UserTask) targetElement;
-                
+
                 if (StrUtil.equals(targetUserTask.getIncomingFlows().get(0).getSourceRef(),"startNode1")) {//是否为发起人节点
                     //开始节点 设置处理人为申请人
                     taskService.setAssignee(targetTask.getId(), startUserId);
                 } else {
-                	
-                	
+
+
                     List<SysUser> sysUserFromTask = getSysUserFromTask(targetUserTask);
-                    
+
                     List<String> collect_username = sysUserFromTask.stream().map(SysUser::getUsername).collect(Collectors.toList());
                     //collect_username转换成realname
                     List<String> newusername = new ArrayList<String>();
@@ -1839,12 +1839,12 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                     	SysUser sysUser = iFlowThirdService.getUserByUsername(oldUser);
                         newusername.add(sysUser.getRealname());
                     }
-             
+
                     // 删除后重写
                     for (String oldUser : collect_username) {
                         taskService.deleteCandidateUser(targetTask.getId(),oldUser);
                     }
-                  
+
                     for (String oldUser : collect_username) {
                         taskService.addCandidateUser(targetTask.getId(),oldUser);
                     }
@@ -1854,7 +1854,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                     }
                 }
             }
-            
+
         } catch (FlowableObjectNotFoundException e) {
             throw new CustomException("未找到流程实例，流程可能已发生变化");
         } catch (FlowableException e) {
@@ -1862,8 +1862,8 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         }
         return Result.OK("撤回流程成功");
     }
-    
-    
+
+
     /**
      * 撤回流程 nbacheng 2022-07-22修正
      *
@@ -1872,20 +1872,20 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      */
     @Override
     public Result revokeProcessForDataId(FlowTaskVo flowTaskVo) {
-    	
+
     	// 当前任务 task
     	Task task = taskService.createTaskQuery().processInstanceId(flowTaskVo.getInstanceId()).active().singleResult();
         if (task == null) {
             throw new CustomException("流程未启动或已执行完成，无法撤回");
         }
-    	
+
     	if (taskService.createTaskQuery().taskId(task.getId()).singleResult().isSuspended()) {
             throw new CustomException("任务处于挂起状态");
         }
-    	
-        
+
+
         SysUser loginUser = iFlowThirdService.getLoginUser();
-        
+
         List<HistoricTaskInstance> htiList = historyService.createHistoricTaskInstanceQuery()
                 .processInstanceId(task.getProcessInstanceId())
                 .orderByTaskCreateTime()
@@ -1903,7 +1903,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         if (null == myTaskId) {
             throw new CustomException("该任务非当前用户提交，无法撤回");
         }
-        
+
         // 获取流程定义信息
         ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionId(task.getProcessDefinitionId()).singleResult();
         // 获取所有节点信息
@@ -1992,7 +1992,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         }));
         // 设置撤回意见
         currentTaskIds.forEach(item -> taskService.addComment(item, task.getProcessInstanceId(), FlowComment.RECALL.getType(), loginUser.getRealname().toString()  + "撤回"));
-             
+
         try {
             // 设置处理人
             taskService.setAssignee(task.getId(), loginUser.getUsername());
@@ -2010,13 +2010,13 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                         .processInstanceId(task.getProcessInstanceId())
                         .moveActivityIdsToSingleActivityId(currentIds, targetIds.get(0)).changeState();
             }
-            
+
           //业务数据id
             String dataId = flowTaskVo.getDataId();
             if (dataId==null) return null;
             //如果保存数据前未调用必调的FlowCommonService.initActBusiness方法，就会有问题
             FlowMyBusiness business = flowMyBusinessService.getByDataId(dataId);
-            
+
             // 撤回到了上一个节点等待处理
             Task targetTask = taskService.createTaskQuery().processInstanceId(flowTaskVo.getInstanceId()).active().singleResult();
             //spring容器类名
@@ -2053,7 +2053,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                     if (flowElement.getId().equals(targetTask.getTaskDefinitionKey())) {
                         // 获取节点信息
                         targetElement = flowElement;
-                    } 
+                    }
                 }
             }
 
@@ -2147,7 +2147,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                     .processInstanceId(task.getProcessInstanceId())
                     .singleResult();
             flowTask.setBusinessKey(historicProcessInstance.getBusinessKey());
-            
+
             SysUser startUser = iFlowThirdService.getUserByUsername(historicProcessInstance.getStartUserId());
             List<String> departNamesByUsername = iFlowThirdService.getDepartNamesByUsername(historicProcessInstance.getStartUserId());
             flowTask.setStartUserId(startUser.getUsername());
@@ -2196,7 +2196,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             flowTask.setCreateTime(task.getCreateTime());
             flowTask.setProcDefId(task.getProcessDefinitionId());
             flowTask.setTaskName(task.getName());
-           
+
             // 流程定义信息
             ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()
                     .processDefinitionId(task.getProcessDefinitionId())
@@ -2212,7 +2212,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                     .processInstanceId(task.getProcessInstanceId())
                     .singleResult();
             flowTask.setBusinessKey(historicProcessInstance.getBusinessKey());
-            
+
             SysUser startUser = iFlowThirdService.getUserByUsername(historicProcessInstance.getStartUserId());
             List<String> departNamesByUsername = iFlowThirdService.getDepartNamesByUsername(historicProcessInstance.getStartUserId());
             flowTask.setStartUserId(startUser.getUsername());
@@ -2224,7 +2224,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         page.setRecords(flowList);
         return Result.OK(page);
     }
-    
+
     /**
      * 已办任务列表
      *
@@ -2270,7 +2270,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
                     .processInstanceId(histTask.getProcessInstanceId())
                     .singleResult();
-            
+
             flowTask.setBusinessKey(historicProcessInstance.getBusinessKey());
             SysUser startUser = iFlowThirdService.getUserByUsername(historicProcessInstance.getStartUserId());
             flowTask.setStartUserId(startUser.getUsername());
@@ -2286,7 +2286,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
 //        result.put("finished",true);
         return Result.OK(page);
     }
-    
+
     /**
      * 已办任务列表
      *
@@ -2341,7 +2341,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
                     .processInstanceId(histTask.getProcessInstanceId())
                     .singleResult();
-            
+
             flowTask.setBusinessKey(historicProcessInstance.getBusinessKey());
             SysUser startUser = iFlowThirdService.getUserByUsername(historicProcessInstance.getStartUserId());
             flowTask.setStartUserId(startUser.getUsername());
@@ -2435,7 +2435,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                             listFlowCommentDto.add(flowcommentDto);
                         }
                     });
-                    flowTask.setListFlowCommentDto(listFlowCommentDto); 
+                    flowTask.setListFlowCommentDto(listFlowCommentDto);
                     hisFlowList.add(flowTask);
                 }
             }
@@ -2451,7 +2451,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         }
         return Result.OK(map);
     }
-    
+
     /**
      * 流程历史流转记录
      * add by nbacheng
@@ -2488,10 +2488,8 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                     for (HistoricIdentityLink identityLink : linksForTask) {
                         if ("candidate".equals(identityLink.getType())) {
                             if (StringUtils.isNotBlank(identityLink.getUserId())) {
-                            	if (StringUtils.isNotBlank(histIns.getAssignee())) {
-                            		SysUser sysUser = iFlowThirdService.getUserByUsername(histIns.getAssignee());
-                                    stringBuilder.append(sysUser.getRealname()).append(",");
-                            	}
+                                SysUser sysUser = iFlowThirdService.getUserByUsername(identityLink.getUserId());
+                                stringBuilder.append(sysUser.getRealname()).append(",");
                             }
                             if (StringUtils.isNotBlank(identityLink.getGroupId())) {
                             	 List<SysRole> allRole = iFlowThirdService.getAllRole();
@@ -2503,7 +2501,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                     if (StringUtils.isNotBlank(stringBuilder)) {
                         flowTask.setCandidate(stringBuilder.substring(0, stringBuilder.length() - 1));
                     }
-                    
+
                     flowTask.setDuration(histIns.getDurationInMillis() == null || histIns.getDurationInMillis() == 0 ? null : getDate(histIns.getDurationInMillis()));
                     // 获取意见评论内容
                     List<Comment> commentList = taskService.getProcessInstanceComments(histIns.getProcessInstanceId());
@@ -2518,7 +2516,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                             listFlowCommentDto.add(flowcommentDto);
                         }
                     });
-                    flowTask.setListFlowCommentDto(listFlowCommentDto); 
+                    flowTask.setListFlowCommentDto(listFlowCommentDto);
                     //获取附件
                     List<Attachment> commentfileList = taskService.getProcessInstanceAttachments(histIns.getProcessInstanceId());
                     List<FlowCommentFileDto> listcommentFileDto =  new ArrayList<FlowCommentFileDto>();
@@ -2553,7 +2551,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             Object businessDataById = flowCallBackService.getBusinessDataById(businessKey);
             map.put("formData",businessDataById);
             map.put("routeName", business.getRouteName());
-            
+
           }
         }
         else {
@@ -2566,7 +2564,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
 	            map.put("formData", JSONObject.parseObject(sysForm.getFormContent()));
 	        }
         }
-        
+
         return Result.OK(map);
     }
 
@@ -2666,7 +2664,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         FlowMyBusiness business = flowMyBusinessService.getOne(flowMyBusinessLambdaQueryWrapper);
         return this.getFlowViewer(business.getProcessInstanceId());
     }
-    
+
     /**
      * 获取流程执行过程
      *
@@ -2702,7 +2700,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
         	return Result.OK(null);
         }
     }
-    
+
 
     /**
      * 获取流程变量
@@ -2736,7 +2734,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             return Result.OK("流程已完结", null);
         }
         return Result.OK(flowNextDto);
-    
+
     }
 
     /**  modify by nbacheng
@@ -2745,15 +2743,15 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
      * @param values 流程变量
      * @return 如果返回null，表示没有下一个节点，流程结束
      */
-  
-    public FlowNextDto getNextFlowNode(String taskId, Map<String, Object> values) {   
+
+    public FlowNextDto getNextFlowNode(String taskId, Map<String, Object> values) {
     	//当前节点
         Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
         FlowNextDto flowNextDto = new FlowNextDto();
-        
+
     	if (Objects.nonNull(task)) {
         	// 下个任务节点
-    		if (DelegationState.PENDING.equals(task.getDelegationState())) { //对于委派的处理 
+    		if (DelegationState.PENDING.equals(task.getDelegationState())) { //对于委派的处理
 	        	List<UserTask> nextUserTask = FindNextNodeUtil.getNextUserTasks(repositoryService, task, values);
 	            if (CollectionUtils.isNotEmpty(nextUserTask)) {
 	            	flowNextDto.setType(ProcessConstants.FIXED);//委派是按原来流程执行，所以直接赋值返回
@@ -2762,7 +2760,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
 	            else {
 	            	return null;
 	            }
-        	
+
              }
             List<UserTask> nextUserTask = FindNextNodeUtil.getNextUserTasks(repositoryService, task, values);
             if (CollectionUtils.isNotEmpty(nextUserTask)) {
@@ -2794,7 +2792,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                     		List<String> listdepname = iFlowThirdService.getDepartNamesByUsername(assignee);
                     		if(listdepname.size()>0){
                     			sysUser.setOrgCodeTxt(listdepname.get(0).toString());
-                    		}	
+                    		}
                     		list.add(sysUser);
                         	flowNextDto.setVars(ProcessConstants.PROCESS_APPROVAL);
                         	flowNextDto.setType(ProcessConstants.USER_TYPE_ASSIGNEE);
@@ -2810,7 +2808,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                           		List<String> listdepname = iFlowThirdService.getDepartNamesByUsername(sysuser.getUsername());
                           		if(listdepname.size()>0){
                           			sysUserTemp.setOrgCodeTxt(listdepname.get(0).toString());
-                          		} 
+                          		}
                           		list.add(sysUserTemp);
                           	  }
                         	}
@@ -2818,7 +2816,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                             flowNextDto.setType(ProcessConstants.USER_TYPE_USERS);
                             flowNextDto.setUserList(list);
                             flowNextDto.setUserTask(userTask);
-                        	
+
                         }
                         else if(userlist.size() > 0) {
                         	List<SysUser> list = new ArrayList<SysUser>();
@@ -2827,7 +2825,7 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                         		List<String> listdepname = iFlowThirdService.getDepartNamesByUsername(username);
                         		if(listdepname.size()>0){
                         			sysUser.setOrgCodeTxt(listdepname.get(0).toString());
-                        		}	
+                        		}
                         		list.add(sysUser);
                         	}
                         	flowNextDto.setVars(ProcessConstants.PROCESS_APPROVAL);

@@ -1828,7 +1828,10 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                     //开始节点 设置处理人为申请人
                     taskService.setAssignee(targetTask.getId(), startUserId);
                 } else {
+                	
+                	
                     List<SysUser> sysUserFromTask = getSysUserFromTask(targetUserTask);
+                    
                     List<String> collect_username = sysUserFromTask.stream().map(SysUser::getUsername).collect(Collectors.toList());
                     //collect_username转换成realname
                     List<String> newusername = new ArrayList<String>();
@@ -1844,6 +1847,10 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                   
                     for (String oldUser : collect_username) {
                         taskService.addCandidateUser(targetTask.getId(),oldUser);
+                    }
+                    if(collect_username.size() ==1) {
+                    	targetTask.setAssignee(newusername.get(0).toString());
+                    	taskService.addUserIdentityLink(targetTask.getId(), collect_username.get(0).toString(), IdentityLinkType.ASSIGNEE);
                     }
                 }
             }
@@ -2481,8 +2488,10 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                     for (HistoricIdentityLink identityLink : linksForTask) {
                         if ("candidate".equals(identityLink.getType())) {
                             if (StringUtils.isNotBlank(identityLink.getUserId())) {
-                            	SysUser sysUser = iFlowThirdService.getUserByUsername(histIns.getAssignee());
-                                stringBuilder.append(sysUser.getRealname()).append(",");
+                            	if (StringUtils.isNotBlank(histIns.getAssignee())) {
+                            		SysUser sysUser = iFlowThirdService.getUserByUsername(histIns.getAssignee());
+                                    stringBuilder.append(sysUser.getRealname()).append(",");
+                            	}
                             }
                             if (StringUtils.isNotBlank(identityLink.getGroupId())) {
                             	 List<SysRole> allRole = iFlowThirdService.getAllRole();

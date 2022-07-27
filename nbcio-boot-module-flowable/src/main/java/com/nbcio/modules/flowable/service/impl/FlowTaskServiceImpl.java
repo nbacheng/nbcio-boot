@@ -594,6 +594,10 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                     for (String oldUser : collect_username) {
                         taskService.addCandidateUser(targetTask.getId(),oldUser);
                     }
+                    if(collect_username.size() ==1) {
+                    	targetTask.setAssignee(newusername.get(0).toString());
+                    	taskService.addUserIdentityLink(targetTask.getId(), collect_username.get(0).toString(), IdentityLinkType.ASSIGNEE);
+                    }
                 }
             }
             
@@ -802,6 +806,10 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                             taskService.addCandidateUser(targetTask.getId(),oldUser);
                         }
                     }
+                    if(collect_username.size() ==1) {
+                    	targetTask.setAssignee(newusername.get(0).toString());
+                    	taskService.addUserIdentityLink(targetTask.getId(), collect_username.get(0).toString(), IdentityLinkType.ASSIGNEE);
+                    }
                 }
             }
 
@@ -939,6 +947,10 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                   
                     for (String oldUser : collect_username) {
                         taskService.addCandidateUser(targetTask.getId(),oldUser);
+                    }
+                    if(collect_username.size() ==1) {
+                    	targetTask.setAssignee(newusername.get(0).toString());
+                    	taskService.addUserIdentityLink(targetTask.getId(), collect_username.get(0).toString(), IdentityLinkType.ASSIGNEE);
                     }
                 }
             }
@@ -1096,6 +1108,10 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                         for (String oldUser : collect_username) {
                             taskService.addCandidateUser(targetTask.getId(),oldUser);
                         }
+                    }
+                    if(collect_username.size() ==1) {
+                    	targetTask.setAssignee(newusername.get(0).toString());
+                    	taskService.addUserIdentityLink(targetTask.getId(), collect_username.get(0).toString(), IdentityLinkType.ASSIGNEE);
                     }
                 }
             }
@@ -2089,6 +2105,10 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                         for (String oldUser : collect_username) {
                             taskService.addCandidateUser(targetTask.getId(),oldUser);
                         }
+                    }
+                    if(collect_username.size() ==1) {
+                    	targetTask.setAssignee(newusername.get(0).toString());
+                    	taskService.addUserIdentityLink(targetTask.getId(), collect_username.get(0).toString(), IdentityLinkType.ASSIGNEE);
                     }
                 }
             }

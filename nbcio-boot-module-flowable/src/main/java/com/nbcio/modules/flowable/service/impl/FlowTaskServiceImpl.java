@@ -594,9 +594,26 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                     for (String oldUser : collect_username) {
                         taskService.addCandidateUser(targetTask.getId(),oldUser);
                     }
+//                    if(collect_username.size() ==1) {
+//                    	targetTask.setAssignee(newusername.get(0).toString());
+//                    	taskService.addUserIdentityLink(targetTask.getId(), collect_username.get(0).toString(), IdentityLinkType.ASSIGNEE);
+//                    }
                     if(collect_username.size() ==1) {
-                    	targetTask.setAssignee(newusername.get(0).toString());
-                    	taskService.addUserIdentityLink(targetTask.getId(), collect_username.get(0).toString(), IdentityLinkType.ASSIGNEE);
+                        targetTask.setAssignee(newusername.get(0).toString());
+                        taskService.addUserIdentityLink(targetTask.getId(), collect_username.get(0).toString(), IdentityLinkType.ASSIGNEE);
+                    }else if(collect_username.size() > 1){
+                        List<HistoricActivityInstance> list = historyService
+                                .createHistoricActivityInstanceQuery()
+                                .activityId(targetTask.getTaskDefinitionKey())
+                                .orderByHistoricActivityInstanceStartTime()
+                                .desc().list();
+                        for (HistoricActivityInstance historicActivityInstance : list) {
+                            if (StrUtil.isNotBlank(historicActivityInstance.getAssignee())) {
+                                targetTask.setAssignee(historicActivityInstance.getAssignee());
+                                taskService.addUserIdentityLink(targetTask.getId(), historicActivityInstance.getAssignee(), IdentityLinkType.ASSIGNEE);
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -807,8 +824,21 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                         }
                     }
                     if(collect_username.size() ==1) {
-                    	targetTask.setAssignee(newusername.get(0).toString());
-                    	taskService.addUserIdentityLink(targetTask.getId(), collect_username.get(0).toString(), IdentityLinkType.ASSIGNEE);
+                        targetTask.setAssignee(newusername.get(0).toString());
+                        taskService.addUserIdentityLink(targetTask.getId(), collect_username.get(0).toString(), IdentityLinkType.ASSIGNEE);
+                    }else if(collect_username.size() > 1){
+                        List<HistoricActivityInstance> list = historyService
+                                .createHistoricActivityInstanceQuery()
+                                .activityId(targetTask.getTaskDefinitionKey())
+                                .orderByHistoricActivityInstanceStartTime()
+                                .desc().list();
+                        for (HistoricActivityInstance historicActivityInstance : list) {
+                            if (StrUtil.isNotBlank(historicActivityInstance.getAssignee())) {
+                                targetTask.setAssignee(historicActivityInstance.getAssignee());
+                                taskService.addUserIdentityLink(targetTask.getId(), historicActivityInstance.getAssignee(), IdentityLinkType.ASSIGNEE);
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -949,8 +979,21 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                         taskService.addCandidateUser(targetTask.getId(),oldUser);
                     }
                     if(collect_username.size() ==1) {
-                    	targetTask.setAssignee(newusername.get(0).toString());
-                    	taskService.addUserIdentityLink(targetTask.getId(), collect_username.get(0).toString(), IdentityLinkType.ASSIGNEE);
+                        targetTask.setAssignee(newusername.get(0).toString());
+                        taskService.addUserIdentityLink(targetTask.getId(), collect_username.get(0).toString(), IdentityLinkType.ASSIGNEE);
+                    }else if(collect_username.size() > 1){
+                        List<HistoricActivityInstance> list = historyService
+                                .createHistoricActivityInstanceQuery()
+                                .activityId(targetTask.getTaskDefinitionKey())
+                                .orderByHistoricActivityInstanceStartTime()
+                                .desc().list();
+                        for (HistoricActivityInstance historicActivityInstance : list) {
+                            if (StrUtil.isNotBlank(historicActivityInstance.getAssignee())) {
+                                targetTask.setAssignee(historicActivityInstance.getAssignee());
+                                taskService.addUserIdentityLink(targetTask.getId(), historicActivityInstance.getAssignee(), IdentityLinkType.ASSIGNEE);
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -1110,8 +1153,21 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
                         }
                     }
                     if(collect_username.size() ==1) {
-                    	targetTask.setAssignee(newusername.get(0).toString());
-                    	taskService.addUserIdentityLink(targetTask.getId(), collect_username.get(0).toString(), IdentityLinkType.ASSIGNEE);
+                        targetTask.setAssignee(newusername.get(0).toString());
+                        taskService.addUserIdentityLink(targetTask.getId(), collect_username.get(0).toString(), IdentityLinkType.ASSIGNEE);
+                    }else if(collect_username.size() > 1){
+                        List<HistoricActivityInstance> list = historyService
+                                .createHistoricActivityInstanceQuery()
+                                .activityId(targetTask.getTaskDefinitionKey())
+                                .orderByHistoricActivityInstanceStartTime()
+                                .desc().list();
+                        for (HistoricActivityInstance historicActivityInstance : list) {
+                            if (StrUtil.isNotBlank(historicActivityInstance.getAssignee())) {
+                                targetTask.setAssignee(historicActivityInstance.getAssignee());
+                                taskService.addUserIdentityLink(targetTask.getId(), historicActivityInstance.getAssignee(), IdentityLinkType.ASSIGNEE);
+                                break;
+                            }
+                        }
                     }
                 }
             }

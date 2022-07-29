@@ -34,10 +34,9 @@ Nbcio-Boot V1.0.0 NBCIO亿事达企业管理平台
 - 缓存：Redis
 
 
-## 技术文档
+## 在线演示 ：  [http://www.nbcio.com:9888](http://www.nbcio.com:9888)
 
-
-- 在线演示 ：  [http://boot.jeecg.com](http://boot.jeecg.com)
+## 技术文档参考官方的下面地址
 
 - 在线文档：  [http://doc.jeecg.com](http://doc.jeecg.com)
 

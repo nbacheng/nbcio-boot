@@ -3,6 +3,8 @@ Nbcio-Boot V1.0.0 NBCIO亿事达企业管理平台
 
 基于jeecg-boot3.0版本（发布日期：2021-11-01）
 
+前端地址 https://gitee.com/nbacheng/nbcio-vue
+
 
 ## 后端技术架构
 - 基础框架：Spring Boot 2.3.5.RELEASE
@@ -34,10 +36,9 @@ Nbcio-Boot V1.0.0 NBCIO亿事达企业管理平台
 - 缓存：Redis
 
 
-## 技术文档
+## 在线演示 ：  [http://www.nbcio.com:9888](http://www.nbcio.com:9888)
 
-
-- 在线演示 ：  [http://boot.jeecg.com](http://boot.jeecg.com)
+## 技术文档参考官方的下面地址
 
 - 在线文档：  [http://doc.jeecg.com](http://doc.jeecg.com)
 

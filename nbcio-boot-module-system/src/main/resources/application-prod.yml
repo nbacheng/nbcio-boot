@@ -133,7 +133,7 @@ spring:
         master:
           url: jdbc:mysql://127.0.0.1:3306/nbcio-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
           username: root
-          password: mastermysql
+          password: fhMysql20190704
           driver-class-name: com.mysql.cj.jdbc.Driver
 
           # 多数据源配置
@@ -213,10 +213,10 @@ jeecg :
   file-view-domain: http://fileview.jeecg.com
   # minio文件上传
   minio:
-    minio_url: http://minio.jeecg.com
-    minio_name: ??
-    minio_pass: ??
-    bucketName: otatest
+    minio_url: http://minio.nbcio.com
+    minio_name: nbcio
+    minio_pass: nbcio4321
+    bucketName: nbcio
   #大屏报表参数设置
   jmreport:
     mode: prod
@@ -266,7 +266,7 @@ knife4j:
   #开启增强配置
   enable: true
   #开启生产环境屏蔽
-  production: false
+  production: true
   basic:
     enable: false
     username: jeecg

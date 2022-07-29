@@ -2,6 +2,7 @@ Nbcio-Boot V1.0.0 NBCIO亿事达企业管理平台
 ===============
 
 基于jeecg-boot3.0版本（发布日期：2021-11-01）
+前端地址 https://gitee.com/nbacheng/nbcio-vue
 
 
 ## 后端技术架构

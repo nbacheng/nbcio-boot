@@ -15,7 +15,7 @@ public abstract class TioServerConfig {
     /**
      * 协议名字(可以随便取，主要用于开发人员辨识)
      */
-    public static final String PROTOCOL_NAME = "V-IM";
+    public static final String PROTOCOL_NAME = "NBCIO-IM";
 
     public static final String CHARSET = "utf-8";
 

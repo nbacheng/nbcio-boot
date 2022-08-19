@@ -242,6 +242,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	public IPage<SysUser> getUserByDepIds(Page<SysUser> page, List<String> departIds, String username) {
 		return userMapper.getUserByDepIds(page, departIds,username);
 	}
+	
+	@Override
+	public IPage<SysUser> getUsersByDepIds(Page<SysUser> page, List<String> departIds) {
+		return userMapper.getUsersByDepIds(page, departIds);
+	}
 
 	@Override
 	public Map<String, String> getDepNamesByUserIds(List<String> userIds) {

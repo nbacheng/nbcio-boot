@@ -61,6 +61,15 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	IPage<SysUser> getUserByDepIds(Page page, @Param("departIds") List<String> departIds, @Param("username") String username);
 
 	/**
+	 *  根据部门Ids,查询部门下用户信息
+	 * @param page   add by nbacheng for IM 没有username参数
+	 * @param departIds
+	 * @return
+	 */
+	IPage<SysUser> getUsersByDepIds(Page page, @Param("departIds") List<String> departIds);
+
+	
+	/**
 	 * 根据角色Id查询用户信息
 	 * @param page
 	 * @param

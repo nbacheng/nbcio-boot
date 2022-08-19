@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nbcio.modules.im.mapper.ImUserMapper">
+
+    <select id="getUserGroups" parameterType="string" resultType="com.nbcio.modules.im.domain.ImChatGroup">
+        SELECT
+            id,
+            name,
+            avatar
+        FROM im_chat_group
+        WHERE id IN (SELECT cg.chat_group_id
+                     FROM im_chat_group_user cg
+                     WHERE cg.username = #{userName})
+    </select>
+    <select id="getChatUserList" parameterType="string" resultType="com.nbcio.modules.im.apithird.entity.SysUser">
+       SELECT
+            id,
+            username,
+            realname,
+            avatar,
+            salt
+        FROM sys_user
+        WHERE username IN (SELECT cg.username
+                     FROM im_chat_group_user cg
+                     WHERE cg.chat_group_id = #{chatId})
+    </select>
+</mapper>

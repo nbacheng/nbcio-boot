@@ -110,10 +110,17 @@
 			<version>3.0</version>
 		</dependency>
 		
-		<!-- BIRD 模块【微服务启动请注释掉】 add by nbacheng -->
+		<!-- estar 模块【微服务启动请注释掉】 add by nbacheng -->
 		<dependency>
 			<groupId>com.nbcio.modules.estar</groupId>
 			<artifactId>nbcio-module-estar</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		
+		<!-- im 聊天 模块【微服务启动请注释掉】 add by nbacheng -->
+		<dependency>
+			<groupId>com.nbcio.modules.im</groupId>
+			<artifactId>nbcio-boot-module-im</artifactId>
 			<version>1.0.0</version>
 		</dependency>
 

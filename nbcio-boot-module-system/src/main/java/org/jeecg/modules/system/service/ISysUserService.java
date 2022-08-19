@@ -102,6 +102,14 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @return
 	 */
 	public IPage<SysUser> getUserByDepIds(Page<SysUser> page, List<String> departIds, String username);
+	
+
+	/**
+	 * 根据部门Ids查询
+	 * @param
+	 * @return
+	 */
+	public IPage<SysUser> getUsersByDepIds(Page<SysUser> page, List<String> departIds);
 
 	/**
 	 * 根据 userIds查询，查询用户所属部门的名称（多个部门名逗号隔开）

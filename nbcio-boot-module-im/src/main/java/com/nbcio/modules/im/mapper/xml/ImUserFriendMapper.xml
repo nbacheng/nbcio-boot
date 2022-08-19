@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nbcio.modules.im.mapper.ImUserFriendMapper">
+    <resultMap id="userMap" type="com.nbcio.modules.im.apithird.entity.SysUser">
+        <result column="u_id" property="id"/>
+        <result column="u_username" property="username"/>
+        <result column="u_realname" property="realname"/>
+        <result column="u_avatar" property="avatar"/>
+        <result column="u_salt" property="salt"/>
+        <result column="u_phone" property="phone"/>
+        <result column="u_email" property="email"/>
+    </resultMap>
+    <select id="getUserFriends" resultMap="userMap" parameterType="string">
+        SELECT
+            u.id AS u_id,
+            u.username AS u_username,
+            u.realname AS u_realname,
+            u.salt AS u_salt,
+            u.avatar AS u_avatar,
+            u.phone AS u_phone,
+            u.email AS u_email
+        FROM
+            (
+                SELECT
+                    friendname AS username
+                FROM
+                    im_user_friend
+                WHERE
+                    username = #{userName}
+                UNION ALL
+                SELECT
+                    username AS username
+                FROM
+                    im_user_friend
+                WHERE
+                    friendname = #{userName}
+            ) ug
+                JOIN sys_user u ON u.username = ug.username
+    </select>
+</mapper>

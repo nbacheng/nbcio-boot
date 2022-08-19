@@ -58,6 +58,7 @@
         <module>nbcio-boot-module-system</module>
         <module>nbcio-module-estar</module>
         <module>nbcio-boot-module-flowable</module>
+	    <module>nbcio-boot-module-im</module>
         <!--需要微服务，请打开
         <module>nbcio-boot-starter</module>
         <module>nbcio-cloud-module</module>-->

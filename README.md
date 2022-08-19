@@ -80,8 +80,10 @@ Nbcio-Boot V1.0.0 NBCIO亿事达企业管理平台
    3、写了一个前端实现从表ERP格式选择，以便以后满足库存管理等ERP应用。
 
    4、参考了多个开源项目，在此表示感谢。
+   
+   5、增加了一个聊天功能
 
-   5、以后希望能增加OA和ERP等相关功能。
+   6、以后希望能增加OA和ERP等相关功能。
    
    系统效果
    ----
@@ -114,6 +116,7 @@ Nbcio-Boot V1.0.0 NBCIO亿事达企业管理平台
    
    ![输入图片说明](https://img-blog.csdnimg.cn/259bc2e0306d4457b9ada1890ca9b1e9.png "在这里输入图片标题")
    
+   ![输入图片说明](https://img-blog.csdnimg.cn/7be0ebce891f43718e603a7883fa0e66.png "在这里输入图片标题")
 
 ## 捐赠 
 

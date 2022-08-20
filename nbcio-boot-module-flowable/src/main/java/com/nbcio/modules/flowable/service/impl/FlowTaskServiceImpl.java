@@ -1497,18 +1497,18 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             // 当前所处流程 todo: 本地启动放开以下注释
 
             List<Task> taskList = taskService.createTaskQuery().processInstanceId(hisIns.getId()).list();
-            if (CollectionUtils.isNotEmpty(taskList)) {
+            if ((taskList.size()==1)) {
                 flowTask.setTaskId(taskList.get(0).getId());
             } else {
                 List<HistoricTaskInstance> historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(hisIns.getId()).orderByHistoricTaskInstanceEndTime().desc().list();
-                flowTask.setTaskId(historicTaskInstance.get(0).getId());
+                flowTask.setTaskId(historicTaskInstance.size()==1?historicTaskInstance.get(0).getId():"");
             }
             //当然任务节点信息
             Map<String, Object> map = currentFlowRecord(hisIns.getId());
             if (Objects.nonNull(map)) {
-            	if(map.containsKey("assigneeName")) flowTask.setAssigneeName(map.get("assigneeName").toString());
-            	if(map.containsKey("deptName")) flowTask.setDeptName(map.get("deptName").toString());
-            	if(map.containsKey("deptName"))flowTask.setTaskName(map.get("taskName").toString());
+            	if(map.containsKey("assigneeName")) flowTask.setAssigneeName(Objects.nonNull(map.get("assigneeName"))?map.get("assigneeName").toString():null);
+            	if(map.containsKey("deptName")) flowTask.setDeptName(Objects.nonNull(map.get("deptName"))?map.get("deptName").toString():null);
+            	if(map.containsKey("taskName"))flowTask.setTaskName(Objects.nonNull(map.get("taskName"))?map.get("taskName").toString():null);
             }
 
             //添加发起人信息
@@ -1639,18 +1639,18 @@ public class FlowTaskServiceImpl extends FlowServiceFactory implements IFlowTask
             flowTask.setProcDefVersion(pd.getVersion());
             // 当前所处流程 todo: 本地启动放开以下注释
             List<Task> taskList = taskService.createTaskQuery().processInstanceId(hisIns.getId()).list();
-            if (CollectionUtils.isNotEmpty(taskList)) {
+            if ((taskList.size()==1)) {
                 flowTask.setTaskId(taskList.get(0).getId());
             } else {
                 List<HistoricTaskInstance> historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(hisIns.getId()).orderByHistoricTaskInstanceEndTime().desc().list();
-                flowTask.setTaskId(historicTaskInstance.get(0).getId());
+                flowTask.setTaskId(historicTaskInstance.size()==1?historicTaskInstance.get(0).getId():"");
             }
             //当然任务节点信息
             Map<String, Object> map = currentFlowRecord(hisIns.getId());
             if (Objects.nonNull(map)) {
-            	if(map.containsKey("assigneeName")) flowTask.setAssigneeName(map.get("assigneeName").toString());
-            	if(map.containsKey("deptName")) flowTask.setDeptName(map.get("deptName").toString());
-            	if(map.containsKey("deptName"))flowTask.setTaskName(map.get("taskName").toString());
+            	if(map.containsKey("assigneeName")) flowTask.setAssigneeName(Objects.nonNull(map.get("assigneeName"))?map.get("assigneeName").toString():null);
+            	if(map.containsKey("deptName")) flowTask.setDeptName(Objects.nonNull(map.get("deptName"))?map.get("deptName").toString():null);
+            	if(map.containsKey("taskName"))flowTask.setTaskName(Objects.nonNull(map.get("taskName"))?map.get("taskName").toString():null);
             }
 
 

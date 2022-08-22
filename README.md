@@ -38,6 +38,8 @@ Nbcio-Boot V1.0.0 NBCIO亿事达企业管理平台
 
 ## 在线演示 ：  [http://www.nbcio.com:9888](http://www.nbcio.com:9888)
 
+    演示账号：admin，zhangsan，01015521328526密码都是123456
+
 ## 技术文档参考官方的下面地址
 
 - 在线文档：  [http://doc.jeecg.com](http://doc.jeecg.com)

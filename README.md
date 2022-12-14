@@ -1,9 +1,23 @@
 Nbcio-Boot V1.0.0 NBCIO亿事达企业管理平台
 ===============
 
-基于jeecg-boot3.0版本（发布日期：2021-11-01）
+目前只在gitee更新，github目前是老版本，需要的可以到gitee下载
 
+基于jeecg-boot3.0版本（发布日期：2021-11-01）
+后端地址 https://gitee.com/nbacheng/nbcio-boot
 前端地址 https://gitee.com/nbacheng/nbcio-vue
+
+在线演示 ： http://122.227.135.243:9888
+演示账号：admin，zhangsan，01015521328526密码都是123456
+如果你对项目感兴趣，请Watch、Star项目
+
+联系作者
+
+欢迎bug反馈，需求建议，技术交流等
+
+个人网页: https://blog.csdn.net/qq_40032778
+
+QQ交流群 ：655054809
 
 
 ## 后端技术架构

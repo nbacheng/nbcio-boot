@@ -8,8 +8,8 @@ Nbcio-Boot V1.0.0 NBCIO亿事达企业管理平台
 后端地址 https://gitee.com/nbacheng/nbcio-boot
 前端地址 https://gitee.com/nbacheng/nbcio-vue
 
-在线演示 ： http://122.227.135.243:9888
-演示账号：admin，zhangsan，01015521328526密码都是123456
+在线演示 ：http://218.75.87.38:9888
+演示账号：star后联系作者获取
 如果你对项目感兴趣，请Watch、Star项目
 
 联系作者

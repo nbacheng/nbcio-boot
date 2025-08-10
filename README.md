@@ -51,7 +51,7 @@ QQ交流群 ：655054809
 - 缓存：Redis
 
 
-## 在线演示 ：  [http://www.nbcio.com:9888](http://www.nbcio.com:9888)
+## 在线演示 ： http://218.75.87.38:9888
 
     演示账号：admin，zhangsan，01015521328526密码都是123456
 
